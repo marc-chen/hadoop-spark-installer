@@ -1,0 +1,58 @@
+
+#配置原则：只提供最基本的配置，让系统可以跑起来，其它的过后再调整
+#
+
+#
+#集群安装根目录
+#
+install.basedir=/usr/local/myhadoop
+#
+# 所有 log 放在一个目录下，方便管理
+log.basedir = /usr/local/myhadoop/logs
+
+#
+# 所有服务使用相同的账号运行
+#
+run.user = hadoop
+
+# 管理集群的节点，用当前节点即可
+# 有可能
+# admin.hostnames = 
+
+# zookeeper，用于协调
+# 机器数量：2n+1
+# 必选
+zookeeper.hostnames = master1.hadoop,master2.hadoop,master3.hadoop
+
+#
+# hadoop
+# 必选
+#
+# namenode，2个
+hadoop.namenode.hostnames = master1.hadoop,master2.hadoop
+#
+# datanode, > 1 个
+hadoop.datanode.hostnames = slave1.hadoop,slave2.hadoop,slave3.hadoop
+#
+# base data dir for every datanode
+# ext3 or ext4, 每个目录属于不同的物理磁盘
+hadoop.datanode.databasedirs = /data1,/data2
+
+#
+# spark
+# 必选
+#
+# master, 2~3
+spark.master.hostnames = master1.hadoop,master2.hadoop,master3.hadoop
+#
+# >1,  suggest same to hadoop.datanode.hostnames
+spark.slave.hostnames = slave1.hadoop,slave2.hadoop,slave3.hadoop
+
+#
+# client，那些需要访问集群服务的机器
+# 
+# 可选
+#
+client.hostnames = client1.hadoop
+
+
