@@ -43,7 +43,7 @@ else
 fi
 
 
-cfg_require package.sdk
+cfg_require package.jdk
 cfg_require package.zookeeper
 cfg_require package.hadoop
 cfg_require package.spark

@@ -34,6 +34,7 @@ function fab_command()
     msg="$2"
 
     {
+        echo "fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
         fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
     } &
     pid=$!
@@ -68,10 +69,24 @@ for host in $(get_all_hostname); do
     group=$($DIR/getconfig.sh run.group)
     fab_command "add_user_group:user=$user,group=$group"
 
-    # for job in add_user_group 
+    dir=$($DIR/getconfig.sh install.basedir)
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+
+    jdk_pkg=$($DIR/getconfig.sh package.jdk)
+    pkg_dir="$DIR/../packages"
+    fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=1.7.0_65"
+
+    # JDK
+
+    # /etc/hosts
 
     break;
 
 done
+
+# ssh no pwd, master to slave
+
+# TODO: for all hadoop datanode, init data dir
+
 
 

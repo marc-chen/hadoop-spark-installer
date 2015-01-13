@@ -11,7 +11,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 conf_file="$DIR/../conf/config"
 
 v=`grep '^[ \t]*'$key'[ \t]*=' $conf_file | cut -d'=' -f2 | sed 's/^[ \t]*//' | sed 's/[ \t]*$//' | head -1`
-echo $v
 
 
 # make sure everythin returned is meanable

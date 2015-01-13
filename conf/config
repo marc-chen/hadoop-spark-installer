@@ -18,7 +18,7 @@ root_passwd_def = 1234
 # time server
 ntp.server = 
 
-package.sdk = jdk-7u65-linux-x64.rpm
+package.jdk = jdk-7u65-linux-x64.tar.gz
 package.zookeeper = zookeeper-3.4.6.tar.gz
 package.hadoop = hadoop-2.6.0.tar.gz
 package.spark = spark-1.2.0-bin-hadoop2.4.tgz

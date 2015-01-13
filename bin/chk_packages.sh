@@ -19,7 +19,7 @@ function pkg_url()
     esac
 }
 
-for p in sdk hadoop zookeeper spark; do
+for p in jdk hadoop zookeeper spark; do
     v=`$DIR/getconfig.sh package.$p`
     if [ ! -f $pkg_dir/$v ]; then
         LOG ERROR "$p package $pkg_dir/$v not exists, download url: $(pkg_url $p)"
