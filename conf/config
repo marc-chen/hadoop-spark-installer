@@ -2,6 +2,29 @@
 #配置原则：只提供最基本的配置，让系统可以跑起来，其它的过后再调整
 #
 
+# 格式要求：
+# key = value
+
+
+ssh_port = 22
+
+# default password of root for all hosts
+root_passwd_def = 1234
+
+# also support specify one by one
+# root_passwd_192.168.0.1 = 1234
+# root_passwd_m2.hadoop = 1234
+
+# time server
+ntp.server = 
+
+package.sdk = jdk-7u65-linux-x64.rpm
+package.zookeeper = zookeeper-3.4.6.tar.gz
+package.hadoop = hadoop-2.6.0.tar.gz
+package.spark = spark-1.2.0-bin-hadoop2.4.tgz
+
+
+
 #
 #集群安装根目录
 #
@@ -13,26 +36,26 @@ log.basedir = /usr/local/myhadoop/logs
 #
 # 所有服务使用相同的账号运行
 #
-run.user = hadoop
+run.user = hdfs
+run.group = hadoop
 
-# 管理集群的节点，用当前节点即可
-# 有可能
-# admin.hostnames = 
+# 管理集群的节点，每个
+admin.hostnames = m1.hadoop
 
 # zookeeper，用于协调
 # 机器数量：2n+1
 # 必选
-zookeeper.hostnames = master1.hadoop,master2.hadoop,master3.hadoop
+zookeeper.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 
 #
 # hadoop
 # 必选
 #
 # namenode，2个
-hadoop.namenode.hostnames = master1.hadoop,master2.hadoop
+hadoop.namenode.hostnames = m1.hadoop,m2.hadoop
 #
 # datanode, > 1 个
-hadoop.datanode.hostnames = slave1.hadoop,slave2.hadoop,slave3.hadoop
+hadoop.datanode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
 # base data dir for every datanode
 # ext3 or ext4, 每个目录属于不同的物理磁盘
@@ -43,16 +66,16 @@ hadoop.datanode.databasedirs = /data1,/data2
 # 必选
 #
 # master, 2~3
-spark.master.hostnames = master1.hadoop,master2.hadoop,master3.hadoop
+spark.master.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
 # >1,  suggest same to hadoop.datanode.hostnames
-spark.slave.hostnames = slave1.hadoop,slave2.hadoop,slave3.hadoop
+spark.slave.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 
 #
 # client，那些需要访问集群服务的机器
 # 
 # 可选
 #
-client.hostnames = client1.hadoop
+# client.hostnames = client1.hadoop
 
 
