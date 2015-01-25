@@ -136,6 +136,8 @@ def set_alluser_ssh_no_pwd():
     #_set_user_ssh_no_pwd('hbase')
 
 
+
+# 放弃，ubuntu 默认没有安装 rpm
 def install_jdk_rpm(rpmpath, ver):
     #pkg="jdk-7u65-linux-x64.rpm"
     with cd( '/tmp/' ):
