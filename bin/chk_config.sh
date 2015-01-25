@@ -31,12 +31,14 @@ function cfg_require_hostname_lists()
 
 v=`$DIR/getconfig.sh ntp.server`
 if [ -z "$v" ]; then
-    LOG WARN "config ntp.server is empty, time sync is strongly suggested"
+    LOG ERROR "config ntp.server is empty, time sync is strongly suggested"
+    exit 1
 else
-    /usr/sbin/ntpdate $v > /dev/null 2>&1
+    /usr/sbin/ntpdate -t 3 $v > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         LOG ERROR "ntp.server $v error"
-        exit 1
+        # TODO
+        # exit 1
     else
         LOG INFO "check config ntp.server SUCCEED"
     fi

@@ -21,11 +21,14 @@ function pkg_url()
 
 for p in jdk hadoop zookeeper spark; do
     v=`$DIR/getconfig.sh package.$p`
+    LOG DEBUG "check $pkg_dir/$v"
     if [ ! -f $pkg_dir/$v ]; then
         LOG ERROR "$p package $pkg_dir/$v not exists, download url: $(pkg_url $p)"
         exit 1
     fi
     LOG INFO "$p package check OK: $v"
+
+    # TODO: check md5
 done
 
 exit 0

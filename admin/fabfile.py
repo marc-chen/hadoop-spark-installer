@@ -126,14 +126,13 @@ def set_hdfs_ssh_no_pwd():
 
 
 
-def set_alluser_ssh_no_pwd():
+# 
+def _set_alluser_ssh_no_pwd():
     """
-    set root, hdfs, spark, hbase
+    set root, hdfs
     """
     set_root_ssh_no_pwd()
     _set_user_ssh_no_pwd('hdfs')
-    #_set_user_ssh_no_pwd('spark')
-    #_set_user_ssh_no_pwd('hbase')
 
 
 
@@ -174,6 +173,7 @@ def install_jdk_rpm(rpmpath, ver):
 def install_jdk_tar(tarpath, ver):
     #pkg="/tmp/jdk-7u65-linux-x64.tar.gz"
     with cd( '/tmp/' ):
+
         # check if have installed
         v=run("""
         if [ -f $JAVA_HOME/bin/java ]; then
@@ -181,6 +181,7 @@ def install_jdk_tar(tarpath, ver):
         fi
         """)
         print "old ver: " + v
+
         if v == ver:
             print "jave version %s already installed" % ver
             return
@@ -210,6 +211,14 @@ def install_jdk_tar(tarpath, ver):
         if [ `grep "^export JAVA_HOME=" $rc | wc -l` -eq 0 ]; then
             echo "export JAVA_HOME=/usr/java/latest" >> $rc
         fi;
+        """)
+
+        # link
+        run("""
+        for bin in java javac jps jar; do
+            rm -f /usr/bin/$bin
+            ln -s /usr/java/default/bin/$bin /usr/bin/$bin
+        done
         """)
 
 
@@ -260,11 +269,27 @@ def ntpdate():
 
 
 
-def cluster_set_etc_hosts():
-    put('hosts', '/etc')
+# append hosts info to /etc/hosts
+def append_to_etc_hosts(hosts_file):
+    put(hosts_file, '/tmp')
+    with cd( '/tmp/' ):
+        run("""
+        file=`basename %s`
+        grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $file \
+        | awk 'NF==2{print $0}' | while read ip host; do
+            sed -i "/^$ip[ \t]/d" /etc/hosts
+            echo "$ip $host" >> /etc/hosts
+        done
+        rm $file
+        """ % hosts_file)
 
     # nscd 是 DNS 缓存服务，对于集群来说提升不大，反而发现会影响 /etc/hosts 中的解析，所以停掉
-    run("service nscd stop; chkconfig nscd off")
+    run("""
+    {
+        service nscd stop; chkconfig nscd off
+        echo
+    } > /dev/null 2>&1
+    """)
 
 
 

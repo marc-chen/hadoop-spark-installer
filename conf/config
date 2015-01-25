@@ -16,7 +16,7 @@ root_passwd_def = 1234
 # root_passwd_m2.hadoop = 1234
 
 # time server
-ntp.server = 
+ntp.server = 192.168.199.1
 
 package.jdk = jdk-7u65-linux-x64.tar.gz
 package.zookeeper = zookeeper-3.4.6.tar.gz

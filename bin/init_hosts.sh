@@ -48,13 +48,15 @@ function fab_command()
 
 # 初始化所有的机器
 
-for host in $(get_all_hostname); do
+#for host in $(get_all_hostname); do
+grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DIR/../conf/hosts | awk 'NF==2{print $0}' \
+| while read ip host; do
 
-    LOG DEBUG "init host $host"
+    LOG DEBUG "init host $host ..."
+    # ip=$(./nametoip.sh $host)
 
     pwd=$(get_pwd $host)
     port=$($DIR/getconfig.sh ssh_port)
-    ip=$(./nametoip.sh $host)
 
     if [ -z "$ip" ] || [ -z "$port" ] || [ -z "$pwd" ]; then
         LOG ERROR "get ip,post,pwd of $host failed: ($ip:$post, $pwd)"
@@ -63,24 +65,27 @@ for host in $(get_all_hostname); do
 
     fab_options="--hosts=$ip:$port --password=$pwd"
 
-    fab_command "set_hostname:name=$host" "set $ip hostname to $host"
 
     user=$($DIR/getconfig.sh run.user)
     group=$($DIR/getconfig.sh run.group)
     fab_command "add_user_group:user=$user,group=$group"
 
+
     dir=$($DIR/getconfig.sh install.basedir)
     fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
 
+
+    # JDK
     jdk_pkg=$($DIR/getconfig.sh package.jdk)
     pkg_dir="$DIR/../packages"
     fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=1.7.0_65"
 
-    # JDK
 
-    # /etc/hosts
+    # TODO: ntp
+    LOG INFO "TODO: ntp"
 
-    break;
+
+    echo
 
 done
 
