@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -52,8 +52,15 @@ function fab_command()
 grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DIR/../conf/hosts | awk 'NF==2{print $0}' \
 | while read ip host; do
 
-    LOG DEBUG "init host $host ..."
+    LOG DEBUG "init host $host($ip) ..."
     # ip=$(./nametoip.sh $host)
+
+    # set roo ssh no password
+    {
+        $DIR/../common/set_ssh_no_pwd.sh $ip root root
+    }&
+    wait
+
 
     pwd=$(get_pwd $host)
     port=$($DIR/getconfig.sh ssh_port)
@@ -66,12 +73,18 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
     fab_options="--hosts=$ip:$port --password=$pwd"
 
 
+    # add user, group
     user=$($DIR/getconfig.sh run.user)
     group=$($DIR/getconfig.sh run.group)
     fab_command "add_user_group:user=$user,group=$group"
 
 
-    dir=$($DIR/getconfig.sh install.basedir)
+    # base dir
+    dir=$($DIR/getconfig.sh basedir.install)
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+    dir=$($DIR/getconfig.sh basedir.log)
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+    dir=$($DIR/getconfig.sh basedir.data)
     fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
 
 
@@ -82,11 +95,12 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
 
 
     # TODO: ntp
-    LOG INFO "TODO: ntp"
+    LOG INFO "TODO: add ntpupdate to crontab"
 
+
+    LOG INFO "SUCCEED: init host $host($ip)"
 
     echo
-
 done
 
 # ssh no pwd, master to slave

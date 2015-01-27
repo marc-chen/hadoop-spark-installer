@@ -22,17 +22,26 @@ fi
 fab --version
 
 
-# set hostname for hosts in conf/hosts
-sub_proc ./bin/init_hostnames.sh
+# set hostname for hosts in conf/hosts, should before chk_config
+##sub_proc ./bin/init_hostnames.sh
 
 
 # check config
 # after check config, all config is OK, so will not check getconfig.sh's return value
-sub_proc ./bin/chk_config.sh
+##sub_proc ./bin/chk_config.sh
+LOG INFO "SUCCEED: check config"
+
+
+
+# set env for scripts after
+. ./bin/set_env.sh
+
 
 
 # check packages
-sub_proc ./bin/chk_packages.sh 
+##sub_proc ./bin/chk_packages.sh 
+LOG INFO "SUCCEED: check packages"
+
 
 
 # copy file to master machines, and run there
@@ -43,7 +52,11 @@ sub_proc ./bin/chk_packages.sh
 #   ssh no pwd
 #   install jdk
 #   hosts
-sub_proc ./bin/init_hosts.sh
+echo
+echo "Init hosts"
+echo
+#sub_proc ./bin/init_hosts.sh
+LOG INFO "SUCCEED: init hosts"
 
 
 # check hosts
@@ -53,18 +66,20 @@ sub_proc ./bin/init_hosts.sh
 LOG INFO "TODO: check host if ready: ntp, network, ssh"
 
 
+
+
+
 # check root passwd
 
-# check config
 
-
-# download packages
-#   packages
-
-
-# install env
 
 # install zookeeper
+echo
+LOG DEBUG "install zookeeper"
+echo
+cd ./projects/zookeeper
+./install.sh `../../bin/getconfig.sh zookeeper.hostnames`
+cd -
 
 # install hadoop
 

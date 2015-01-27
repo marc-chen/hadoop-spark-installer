@@ -28,10 +28,13 @@ package.spark = spark-1.2.0-bin-hadoop2.4.tgz
 #
 #集群安装根目录
 #
-install.basedir=/usr/local/myhadoop
+basedir.install = /usr/local/myhadoop
 #
 # 所有 log 放在一个目录下，方便管理
-log.basedir = /usr/local/myhadoop/logs
+basedir.log = /usr/local/myhadoop/logs
+#
+# 所有 log 放在一个目录下，方便管理
+basedir.data = /usr/local/myhadoop/datas
 
 #
 # 所有服务使用相同的账号运行

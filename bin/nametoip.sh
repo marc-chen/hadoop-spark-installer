@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-exit 0
+# exit 0
 
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

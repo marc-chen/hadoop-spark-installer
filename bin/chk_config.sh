@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . $DIR/../common/log.sh
@@ -34,6 +34,8 @@ if [ -z "$v" ]; then
     LOG ERROR "config ntp.server is empty, time sync is strongly suggested"
     exit 1
 else
+    LOG INFO "TODO: check ntp server"
+  if [ 0 -gt 1 ]; then
     /usr/sbin/ntpdate -t 3 $v > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         LOG ERROR "ntp.server $v error"
@@ -42,6 +44,7 @@ else
     else
         LOG INFO "check config ntp.server SUCCEED"
     fi
+  fi
 fi
 
 
@@ -52,8 +55,9 @@ cfg_require package.spark
 
 # TODO: set default 
 
-cfg_require install.basedir
-cfg_require log.basedir
+cfg_require basedir.install
+cfg_require basedir.log
+cfg_require basedir.data
 
 cfg_require run.user
 cfg_require_hostname_lists admin.hostnames

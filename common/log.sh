@@ -66,6 +66,7 @@ function _log_make_msg()
     n=$((n-1))
     last_source=${BASH_SOURCE[$n]}
     LOG_SCRIPT="$( cd "$( dirname "$last_source" )" && pwd )/$( basename "$last_source" )"
+    LOG_SCRIPT=""
     #n=$((n-1))
     #
     # 通过函数调用在 BASH_SOURCE 会重复，信用嵌套显示

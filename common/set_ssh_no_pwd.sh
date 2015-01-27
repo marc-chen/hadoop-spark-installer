@@ -19,10 +19,10 @@ if [ $# -eq 3 ]; then
 fi
 
 
-echo "testing ..."
+# echo "testing ..."
 sudo -u $user ssh -o NumberOfPasswordPrompts=0 -o StrictHostKeyChecking=no $host 'echo OK'
 if [ $? -eq 0 ]; then
-    echo "it's OK"
+    echo "ssh root to $host without password OK"
     exit 0
 fi
 
@@ -37,4 +37,6 @@ type="rsa"
 
 sudo -u $user scp ~/.ssh/id_$type.pub $host:~/
 sudo -u $user ssh $host "cd; mkdir -p .ssh; cat id_${type}.pub >> .ssh/authorized_keys; rm id_$type.pub"
+
+echo "set ssh root to $host without password OK"
 

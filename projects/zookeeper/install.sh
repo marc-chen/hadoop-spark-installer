@@ -40,12 +40,16 @@ function install()
 
     # copy pkg, conf
 
-    scp ${CLUSTER_PROJECT_ZK_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
+    scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_ZK_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
+
     ssh $host "cd ${CLUSTER_BASEDIR_INSTALL};
+
     rm -rf tmp.zk; mkdir tmp.zk;
-    mv ${CLUSTER_PROJECT_ZK_PKG_NAME} ./tmp.zk;
-    tar xf ./tmp.zk/* ./tmp.zk
-    tmpdir=\$(ls -lt ./tmp.zk | grep ^d | head -1 | awk '{print $NF}')
+    mv ${CLUSTER_PROJECT_ZK_PKG_NAME} ./tmp.zk/;
+
+    tar xf ./tmp.zk/* -C ./tmp.zk/
+    tmpdir=\$(ls -lt ./tmp.zk | grep ^d | head -1 | awk '{print \$NF}')
+    echo tmpdir: \$tmpdir
 
     # for existing dir, not delete, just overwrite packages
     if [ -d ${CLUSTER_PROJECT_ZK_NAME} ]; then
@@ -53,6 +57,7 @@ function install()
     else
         mv ./tmp.zk/\$tmpdir ./${CLUSTER_PROJECT_ZK_NAME}
     fi
+
     # rm -rf ./tmp.zk
     mkdir -p ./${CLUSTER_PROJECT_ZK_NAME}/conf
 
@@ -78,8 +83,9 @@ function install()
 
 id=1
 for host in `echo $install_hosts | sed 's/,/\n/g'`; do
-    echo "install $id $host ..."
-    install $host $id
+    ip=`../../bin/nametoip.sh $host`
+    echo "install $id $host($ip) ..."
+    install $ip $id
     id=$((id + 1))
 done
 
