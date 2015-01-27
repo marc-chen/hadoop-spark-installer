@@ -28,8 +28,9 @@ function fab_command()
     msg="$2"
 
     {
-        echo "fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
-        fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
+        echo "fab --fabfile=$DIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
+        #fab --fabfile=$DIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
+        fab $fab_options $cmd > tmp.fab.log 2>&1
     } &
     pid=$!
     wait $pid

@@ -23,7 +23,7 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
     #    exit 1
     #fi
 
-    fab_options="--hosts=$ip:$port --password=$pwd"
+    fab_options="--fabfile=$DIR/../env/fabfile.py --hosts=$ip:$port --password=$pwd"
 
     fab_command "set_hostname:name=$host" "set $ip hostname to $host"
 

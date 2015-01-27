@@ -4,14 +4,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 . $DIR/../common/log.sh
 
-function get_pwd()
-{
-    host=$1
-    v=`$DIR/getconfig.sh root_passwd_$host`
-    if [ -z "$v" ]; then
-        $DIR/getconfig.sh root_passwd_def
-    fi
-}
+. $DIR/utils.sh
+
 
 function get_all_hostname()
 {
@@ -28,23 +22,6 @@ function get_all_hostname()
 
 fab_options=""
 
-function fab_command()
-{
-    cmd="$1"
-    msg="$2"
-
-    {
-        echo "fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
-        fab --fabfile=$DIR/../admin/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
-    } &
-    pid=$!
-    wait $pid
-    if [ $? -ne 0 ]; then
-        LOG ERROR "FAILED: $msg"
-        exit 1
-    fi
-    LOG INFO "SUCCEED: $msg"
-}
 
 # 初始化所有的机器
 
@@ -57,7 +34,7 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
 
     # set roo ssh no password
     {
-        $DIR/../common/set_ssh_no_pwd.sh $ip root root
+        $DIR/../env/set_ssh_no_pwd.sh $ip root root
     }&
     wait
 
@@ -70,7 +47,7 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
         exit 1
     fi
 
-    fab_options="--hosts=$ip:$port --password=$pwd"
+    fab_options="--fabfile=$DIR/../env/fabfile.py --hosts=$ip:$port --password=$pwd"
 
 
     # add user, group
