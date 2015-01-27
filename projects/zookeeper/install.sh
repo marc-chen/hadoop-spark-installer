@@ -22,6 +22,23 @@ log_dir="${CLUSTER_BASEDIR_LOG}/zookeeper"
 #run_user="hdfs"
 
 
+#
+# make conf
+#
+rm -rf conf; mkdir conf
+cp conf.template/zoo.cfg ./conf
+
+data_dir_escape=$(echo "$data_dir" | sed 's/\//\\\//g')
+#echo $data_dir_escape
+sed -i 's/^dataDir=.*/dataDir='"$data_dir_escape"'/' ./conf/zoo.cfg
+
+sed -i '/^server\.\d/d' conf/zoo.cfg 
+id=1
+for host in $(echo $install_hosts | sed 's/,/\n/g'); do
+    echo "server.$id=$host:2371:3371" >> ./conf/zoo.cfg
+    id=$((id + 1))
+done
+
 
 
 function install()
@@ -37,6 +54,8 @@ function install()
     #    rm -rf $data_dir;
     #    rm -rf ${CLUSTER_BASEDIR_INSTALL}/$zookeeper_name
     #"
+
+    ssh $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
     # copy pkg, conf
 
@@ -82,11 +101,12 @@ function install()
 
 
 id=1
-for host in `echo $install_hosts | sed 's/,/\n/g'`; do
-    ip=`../../bin/nametoip.sh $host`
+for host in $(echo $install_hosts | sed 's/,/\n/g'); do
+    ip=$(../../bin/nametoip.sh $host)
     echo "install $id $host($ip) ..."
     install $ip $id
     id=$((id + 1))
 done
 
 
+rm -rf conf
