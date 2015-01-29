@@ -11,16 +11,6 @@ install_hosts="$1"
 data_dir="${CLUSTER_BASEDIR_DATA}/zookeeper"
 log_dir="${CLUSTER_BASEDIR_LOG}/zookeeper"
 
-# install_base_dir="${CLUSTER_BASEDIR_INSTALL}"
-
-#zookeeper_name="zookeeper-3.4.6"
-#zookeeper_name=${CLUSTER_PROJECT_ZK_NAME}
-
-#pkg="$zookeeper_name.tar.gz"
-#pkg=${CLUSTER_PROJECT_ZK_PKG_NAME}
-
-#run_user="hdfs"
-
 
 #
 # make conf

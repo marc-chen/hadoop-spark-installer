@@ -14,7 +14,13 @@ export CLUSTER_PACKAGE_DIR="$DIR/../packages"
 
 # like zookeeper-3.4.6.tar.gz
 export CLUSTER_PROJECT_ZK_PKG_NAME=$($DIR/getconfig.sh package.zookeeper)
+# zookeeper-3.4.6
 export CLUSTER_PROJECT_ZK_NAME=$(echo ${CLUSTER_PROJECT_ZK_PKG_NAME} | awk -F".tar.gz|.tgz" '{print $1}')
+
+# hadoop-2.6.0.tar.gz
+export CLUSTER_PROJECT_HADOOP_PKG_NAME=$($DIR/getconfig.sh package.hadoop)
+# hadoop-2.6.0
+export CLUSTER_PROJECT_HADOOP_NAME=$(echo ${CLUSTER_PROJECT_HADOOP_PKG_NAME} | awk -F".tar.gz|.tgz" '{print $1}')
 
 
 # TODO: print all evn
