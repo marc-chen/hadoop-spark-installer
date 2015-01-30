@@ -78,8 +78,8 @@ echo
 LOG DEBUG "install zookeeper"
 echo
 cd ./projects/zookeeper
-#./install.sh `../../bin/getconfig.sh zookeeper.hostnames`
-./remove.sh `../../bin/getconfig.sh zookeeper.hostnames`
+#./install.sh
+./remove.sh
 cd -
 
 # install hadoop

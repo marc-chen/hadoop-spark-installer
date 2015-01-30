@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 hostnames"
-    exit 0
-fi
 
-install_hosts=$1
+install_hosts=`../../bin/getconfig.sh zookeeper.hostnames`
 
 data_dir="${CLUSTER_BASEDIR_DATA}/zookeeper"
 log_dir="${CLUSTER_BASEDIR_LOG}/zookeeper"

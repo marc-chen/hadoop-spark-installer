@@ -41,3 +41,10 @@ function fab_command()
     LOG INFO "SUCCEED: $msg"
 }
 
+function print_var()
+{
+    k=$1
+    v=$(eval echo "\$$k")
+    echo -e "$k\t$v"
+}
+

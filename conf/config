@@ -6,6 +6,12 @@
 # key = value
 
 
+# 机器分为两类：
+# master: 管理或辅助节点，要求高可用，建议使用RAID，其它硬件条件普通即可
+# slave : 工作节点，担负集群主要的工作负载，比如 hadoop 存储节点，spark 计算节点
+
+# TODO: 机器强制分为 2 类
+
 ssh_port = 22
 
 # default password of root for all hosts
@@ -33,7 +39,7 @@ basedir.install = /usr/local/myhadoop
 # 所有 log 放在一个目录下，方便管理
 basedir.log = /usr/local/myhadoop/logs
 #
-# 所有 log 放在一个目录下，方便管理
+# 所有 data 放在一个目录下，方便管理
 basedir.data = /usr/local/myhadoop/datas
 
 #
@@ -42,9 +48,11 @@ basedir.data = /usr/local/myhadoop/datas
 run.user = hdfs
 run.group = hadoop
 
+# master
 # 管理集群的节点，每个
 admin.hostnames = m1.hadoop
 
+# master
 # zookeeper，用于协调
 # 机器数量：2n+1
 # 必选
@@ -54,23 +62,31 @@ zookeeper.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 # hadoop
 # 必选
 #
-# namenode，2个
+# master
+# namenode，must 2
 hadoop.namenode.hostnames = m1.hadoop,m2.hadoop
 #
+# slave
 # datanode, > 1 个
 hadoop.datanode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
+# master
+# JournalNode, 2*n+1, Strongly recommended to use the same as zookeeper
+hadoop.journalnode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
+#
 # base data dir for every datanode
-# ext3 or ext4, 每个目录属于不同的物理磁盘
+#   ext3 or ext4, 每个目录属于不同的物理磁盘
 hadoop.datanode.databasedirs = /data1,/data2
 
 #
 # spark
 # 必选
 #
+# master
 # master, 2~3
 spark.master.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
+# slave
 # >1,  suggest same to hadoop.datanode.hostnames
 spark.slave.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 
