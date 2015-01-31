@@ -12,6 +12,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #
 
 data_dir="${CLUSTER_BASEDIR_DATA}/hadoop"
+log_dir_hdfs="${CLUSTER_BASEDIR_LOG}/hdfs"
+log_dir_yarn="${CLUSTER_BASEDIR_LOG}/yarn"
 
 # zookeeper.quorum
 #   like m1.hadoop:2181,m2.hadoop:2181,m3.hadoop:2181
@@ -47,7 +49,7 @@ print_var databasedirs
 rm -rf conf; mkdir conf
 cp conf.ha.template/* ./conf/
 
-# TODO: hadoop 自己可以通过 ${var} 的形式来引用变量，但无法自己定义一个变量也这样引用
+# NOTICE: hadoop 自己可以通过 ${var} 的形式来引用变量，但无法自己定义一个变量也这样引用
 
 # give name, set new value
 function set_conf_xml_property_value()
@@ -98,7 +100,7 @@ set_conf_xml_property_value hdfs-site.xml dfs.datanode.data.dir     "${databased
 echo "
 export JAVA_HOME=/usr/java/latest
 export HADOOP_PREFIX=${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME}
-export HADOOP_LOG_DIR=${CLUSTER_BASEDIR_LOG}/hdfs
+export HADOOP_LOG_DIR=${log_dir_hdfs}
 " > conf/hadoop-env.sh
 
 
@@ -112,7 +114,7 @@ export HADOOP_LOG_DIR=${CLUSTER_BASEDIR_LOG}/hdfs
 echo "
 export JAVA_HOME=/usr/java/latest
 export HADOOP_PREFIX=${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME}
-export YARN_LOG_DIR=${CLUSTER_BASEDIR_LOG}/yarn
+export YARN_LOG_DIR=${log_dir_yarn}
 " > conf/yarn-env.sh
 
 
@@ -124,7 +126,7 @@ set_conf_xml_property_value yarn-site.xml yarn.resourcemanager.zk-address "$zk_q
 
 
 
-exit 0
+# exit 0
 
 
 # TODO: set ssh no pwd, from namenode to datanode
@@ -138,18 +140,28 @@ function install()
 
     ssh $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
-    # copy pkg and un package
+    # copy pkg and extract package
     scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
     ssh $host "
       cd ${CLUSTER_BASEDIR_INSTALL};
       tar xf ${CLUSTER_PROJECT_HADOOP_PKG_NAME}
+      mkdir -p ${CLUSTER_PROJECT_HADOOP_NAME}/conf
+      mkdir -p ${CLUSTER_PROJECT_HADOOP_NAME}/lib
+      rm -f hadoop
+      ln -s ${CLUSTER_PROJECT_HADOOP_NAME} hadoop
     "
 
     # conf
     scp -r conf/* $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME}/conf/
 
     ssh $host "
-        for d in ... ; do
+        for d in ${data_dir} ${log_dir_hdfs} ${log_dir_yarn} ${CLUSTER_BASEDIR_INSTALL} ; do
+            mkdir -p \$d
+            chown -R $CLUSTER_USER  \$d
+            chgrp -R $CLUSTER_GROUP \$d
+        done
+
+        echo ${databasedirs} | sed 's/[,;]/\n/g' | sort -u | grep -v '^$' | while read d; do
             mkdir -p \$d
             chown -R $CLUSTER_USER  \$d
             chgrp -R $CLUSTER_GROUP \$d
@@ -161,17 +173,22 @@ function install()
 {
   ../../bin/getconfig.sh hadoop.namenode.hostnames
   ../../bin/getconfig.sh hadoop.datanode.hostnames
+  ../../bin/getconfig.sh hadoop.journalnode.hostnames
 } | sed 's/[,;]/\n/g' | sort -u | grep -v '^$' \
 | while read host; do
+    {
     ip=$(../../bin/nametoip.sh $host)
     echo "install  $host($ip) ..."
     install $ip
+    } &
 done
+wait
 
-fab_options=""
-    pwd=$(get_pwd $host)
-    port=$($DIR/getconfig.sh ssh_port)
-    fab_options="--fabfile=$DIR/../env/fabfile.py --hosts=$ip:$port --password=$pwd"
+
+#fab_options=""
+#    pwd=$(get_pwd $host)
+#    port=$($DIR/getconfig.sh ssh_port)
+#    fab_options="--fabfile=$DIR/../env/fabfile.py --hosts=$ip:$port --password=$pwd"
 
 
 
