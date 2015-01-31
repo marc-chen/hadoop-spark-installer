@@ -3,14 +3,14 @@
 
 
 ## 机器
-分两台：master, slave
+分两类：master, slave
 
-####master 要求：
+** master 要求：**
 * sshd, python 2, fabric
 * 3台即可，建议硬件、软件配置完全相同
 * 对硬件性能要求不高，一般服务器都可以满足
 
-####slave 要求：
+** slave 要求：**
 * sshd
 * 建议3~100台，硬件、软件配置完全相同，存储、CPU、内存越大越好，参考 hadoop, spark 对硬件要求
 
