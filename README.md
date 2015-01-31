@@ -5,12 +5,12 @@
 ## 机器
 分两类：master, slave
 
-** master 要求：**
+__master 要求：__
 * sshd, python 2, fabric
 * 3台即可，建议硬件、软件配置完全相同
 * 对硬件性能要求不高，一般服务器都可以满足
 
-** slave 要求：**
+**slave 要求：**
 * sshd
 * 建议3~100台，硬件、软件配置完全相同，存储、CPU、内存越大越好，参考 hadoop, spark 对硬件要求
 
@@ -21,13 +21,13 @@
 3. 编辑配置文件 conf/config，这是必须的最基本配置
 4. 选一台 master 做为主安装服务器，执行如下操作：
 ```bash
-    ./install set env
-    ./install install zookeeper
-    ./install install hadoop
+./install set env
+./install install zookeeper
+./install install hadoop
 ```
 5. 在其它 master 上执行操作：
 ```bash
-    ./install set pwd-less-ssh (TODO)
+./install set pwd-less-ssh (TODO)
 ```
 
 ## 启动服务
