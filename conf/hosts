@@ -11,6 +11,7 @@
 # 192.168.0.12 slave2.hadoop
 # 192.168.0.13 slave3.hadoop
 
+192.168.199.40 m0.hadoop
 192.168.199.41 m1.hadoop
 192.168.199.42 m2.hadoop
 192.168.199.43 m3.hadoop

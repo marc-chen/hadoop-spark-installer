@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# 配置中大部分使用 hostname 来引用主机，但当前安装机器可能没有配置正确的 /etc/hosts 或 dns
+# 故提供一个工具，从 hostname 转 ip, 方便安装过程中各脚本使用
+#
+
 # exit 0
 
 

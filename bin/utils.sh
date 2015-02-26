@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
+# basic tools
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-. $DIR/../common/log.sh
+UTILDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+. $UTILDIR/../common/log.sh
 
 # input: hostname
 # output: root passwd
 function get_pwd()
 {
     host=$1
-    v=`$DIR/getconfig.sh root_passwd_$host`
+    v=`$UTILDIR/getconfig.sh root_passwd_$host`
     if [ -z "$v" ]; then
-        $DIR/getconfig.sh root_passwd_def
+        $UTILDIR/getconfig.sh root_passwd_def
     fi
 }
 
@@ -28,8 +30,8 @@ function fab_command()
     msg="$2"
 
     {
-        echo "fab --fabfile=$DIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
-        #fab --fabfile=$DIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
+        echo "fab --fabfile=$UTILDIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1"
+        #fab --fabfile=$UTILDIR/../env/fabfile.py $fab_options $cmd > tmp.fab.log 2>&1
         fab $fab_options $cmd > tmp.fab.log 2>&1
     } &
     pid=$!

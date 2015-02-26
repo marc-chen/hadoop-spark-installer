@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# 初始化一些环境变量，方便其它安装脚本使用
+#
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 

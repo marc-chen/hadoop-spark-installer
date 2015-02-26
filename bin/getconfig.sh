@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# 查询 conf/config 接口
+#
+
 if [ $# -ne 1 ]; then
     echo "Usage: $0 config_key"
     exit 1

@@ -32,15 +32,16 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
     LOG DEBUG "init host $host($ip) ..."
     # ip=$(./nametoip.sh $host)
 
-    # set roo ssh no password
-    {
-        $DIR/../env/set_ssh_no_pwd.sh $ip root root
-    }&
-    wait
+    ## set roo ssh no password
+    #{
+    #    $DIR/../env/set_ssh_no_pwd.sh $ip root root
+    #}&
+    #wait
 
 
     pwd=$(get_pwd $host)
     port=$($DIR/getconfig.sh ssh_port)
+
 
     if [ -z "$ip" ] || [ -z "$port" ] || [ -z "$pwd" ]; then
         LOG ERROR "get ip,post,pwd of $host failed: ($ip:$post, $pwd)"

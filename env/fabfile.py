@@ -10,13 +10,6 @@
 
 from fabric.api import *
 
-"""
-help: 主机列表的生效顺序如下：先单个task，再全局list
-    1 fab 任务参数 mytask:host=host1
-    2 函数前加上一行 @hosts('host1')
-    3 全局定义 env.hosts = ['host1']
-    4 fab 参数 --hosts=host1
-"""
 
 
 def pwd():
@@ -42,9 +35,10 @@ def add_user_group(user='hdfs', group='cluster'):
     #usermod -a -G $grp root
     #cp /root/.vimrc  /home/hdfs/
     home=`grep "^$user:" /etc/passwd | cut -d':' -f6`
+    mkdir -p $home
     echo home: $home
-    #chown -R $user $home
-    #chgrp -R $grp  $home
+    chown -R $user $home
+    chgrp -R $grp  $home
     """
     % (user, group)
     )
@@ -73,7 +67,7 @@ def clean_ssh_no_pwd():
     """)
 
 
-def _set_user_ssh_no_pwd(user, group = 'cluster'):
+def set_pwd_less_ssh(user, group):
 
     """
     su <USER> -c "ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa"
@@ -86,7 +80,7 @@ def _set_user_ssh_no_pwd(user, group = 'cluster'):
     user_home = "/root" if user == "root" else "/home/%s" % user
 
     #type = "dsa"
-    type = "rsa"
+    type = "rsa" # 必须 rsa, hadoop 配置文件 hdfs-site.xml 中的 dfs.ha.fencing.ssh.private-key-files 依赖 rsa
 
     local("""
     if [ ! -f %s/.ssh/id_%s.pub ]; then
@@ -119,20 +113,20 @@ def _set_user_ssh_no_pwd(user, group = 'cluster'):
     )
 
 
-def set_root_ssh_no_pwd():
-    _set_user_ssh_no_pwd('root')
-def set_hdfs_ssh_no_pwd():
-    _set_user_ssh_no_pwd('hdfs')
+#def set_root_ssh_no_pwd():
+#    _set_user_ssh_no_pwd('root')
+#def set_hdfs_ssh_no_pwd():
+#    _set_user_ssh_no_pwd('hdfs')
 
 
 
 # 
-def _set_alluser_ssh_no_pwd():
-    """
-    set root, hdfs
-    """
-    set_root_ssh_no_pwd()
-    _set_user_ssh_no_pwd('hdfs')
+#def _set_alluser_ssh_no_pwd():
+#    """
+#    set root, hdfs
+#    """
+#    set_root_ssh_no_pwd()
+#    _set_user_ssh_no_pwd('hdfs')
 
 
 

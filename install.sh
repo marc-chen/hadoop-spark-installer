@@ -63,7 +63,8 @@ if [ $1 == "set" ] && [ $2 == "env" ]; then
         LOG ERROR "fab is required"
         exit 1
     fi
-    fab --version # TODO: check ver
+    # TODO: check ver
+    # fab --version 
 
 
     # set hostname for hosts in conf/hosts, should before chk_config
@@ -97,6 +98,11 @@ if [ $1 == "set" ] && [ $2 == "env" ]; then
     # check packages
     sub_proc ./bin/chk_packages.sh 
     LOG INFO "SUCCEED: check packages"
+
+
+    # 
+    LOG INFO "set_ssh_no_pwd_to_slaves"
+    ./set_ssh_no_pwd_to_slaves.sh
 
 
 
