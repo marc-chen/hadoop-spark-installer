@@ -42,15 +42,8 @@ function install_proj()
     echo
     LOG DEBUG "install $proj"
     echo
+
     cd ./projects/$proj
-
-    # 生成默认 admin_env.sh
-    {
-        echo "export HADOOP_USER=${CLUSTER_USER}"
-        echo "export HADOOP_GROUP=${CLUSTER_GROUP}"
-        echo "export HADOOP_PREFIX=${CLUSTER_BASEDIR_INSTALL}/$proj"
-    } > admin_env.sh
-
     ./install.sh
     # ./remove.sh
     cd -
@@ -66,6 +59,9 @@ install_proj $1
 # install spark
 
 # check install
+
+
+# copy admin.sh to install-base-dir
 
 function get_all_master_hostname()
 {

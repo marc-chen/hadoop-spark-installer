@@ -140,6 +140,13 @@ echo $masters | sed 's/,/\n/g' \
 > conf/namenodes
 
 
+# admin_env.sh
+{
+    echo "export HADOOP_USER=${CLUSTER_USER}"
+    echo "export HADOOP_GROUP=${CLUSTER_GROUP}"
+    echo "export HADOOP_PREFIX=${CLUSTER_BASEDIR_INSTALL}/hadoop"
+} > admin_env.sh
+
 # exit 0
 
 ################################################################################
@@ -155,7 +162,7 @@ function install()
     ssh $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
     # copy pkg and extract package
-    scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
+    ## scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
     echo "copy package end"
 
     ssh $host "
@@ -207,13 +214,20 @@ done
 #wait
 
 
+. admin_env.sh
+
+# TODO copy scripts to namenode
+for host in `cat conf/namenodes`; do
+    scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh $host:${HADOOP_PREFIX}
+done
 
 ################################################################################
 #
 # init hadoop
 #
 
-. admin_env.sh
+
+exit 0
 
 # start journalnode
 LOG DEBUG "start journal node"
@@ -231,9 +245,6 @@ su $CLUSTER_USER -c "cd ${CLUSTER_BASEDIR_INSTALL}/hadoop; ./bin/hdfs zkfc -form
 LOG DEBUG "stop journal node"
 su $CLUSTER_USER -c './journalnode.sh stop'
 
-
-# TODO copy scripts to namenode
-# scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh $host:${CLUSTER_BASEDIR_INSTALL}/hadoop
 
 
 LOG INFO "install hadoop over"
