@@ -48,7 +48,7 @@ function install_proj()
 # default admin_env.sh
 {
     echo "# env shared by all projects"
-    echo "export SSH_OPTS=${SSH_OPTS}"
+    echo "export SSH_OPTS='${SSH_OPTS}'"
     echo "export CLUSTER_USER=${CLUSTER_USER}"
     echo "export CLUSTER_GROUP=${CLUSTER_GROUP}"
     echo
