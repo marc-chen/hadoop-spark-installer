@@ -145,7 +145,7 @@ echo $masters | sed 's/,/\n/g' \
     echo "export HADOOP_USER=${CLUSTER_USER}"
     echo "export HADOOP_GROUP=${CLUSTER_GROUP}"
     echo "export HADOOP_PREFIX=${CLUSTER_BASEDIR_INSTALL}/hadoop"
-} > admin_env.sh
+} >> admin_env.sh
 
 # exit 0
 
@@ -159,7 +159,7 @@ function install()
 {
     host=$1
 
-    ssh $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
+    ssh $SSH_OPTS $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
     # copy pkg and extract package
     ## scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}

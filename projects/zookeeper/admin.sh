@@ -38,7 +38,7 @@ fi
 action=$1
 
 for host in $(grep '^server\.' conf/zoo.cfg | cut -d'=' -f2 | cut -d':' -f1 | sort -u); do
-    ssh $host "su $ZOOKEEPER_USER -c 'cd $ZOOKEEPER_PREFIX; ./bin/zkServer.sh $action'"
+    ssh $SSH_OPTS $host "su $ZOOKEEPER_USER -c 'cd $ZOOKEEPER_PREFIX; ./bin/zkServer.sh $action'"
 done
 
 

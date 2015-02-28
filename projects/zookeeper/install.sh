@@ -31,7 +31,7 @@ done
     echo "export ZOOKEEPER_USER=${CLUSTER_USER}"
     echo "export ZOOKEEPER_GROUP=${CLUSTER_GROUP}"
     echo "export ZOOKEEPER_PREFIX=${CLUSTER_BASEDIR_INSTALL}/zookeeper"
-} > admin_env.sh
+} >> admin_env.sh
 
 
 
@@ -54,7 +54,7 @@ function install()
     #    rm -rf ${CLUSTER_BASEDIR_INSTALL}/$zookeeper_name
     #"
 
-    ssh $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
+    ssh $SSH_OPTS $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
     # copy pkg, conf
 
@@ -83,7 +83,7 @@ function install()
     ln -s ${CLUSTER_PROJECT_ZK_NAME} zookeeper
     "
 
-    scp -r admin.sh $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_ZK_NAME}/
+    scp -r admin.sh admin_env.sh $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_ZK_NAME}/
 
     scp -r conf/* $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_ZK_NAME}/conf/
 
