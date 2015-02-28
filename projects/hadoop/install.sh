@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. $DIR/../../common/log.sh
-. $DIR/../../bin/utils.sh
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#. $DIR/../../common/log.sh
+#. $DIR/../../bin/utils.sh
+. ./../../common/log.sh
+. ./../../bin/utils.sh
 
 
 
+################################################################################
 #
 # read conf
 #
@@ -42,6 +45,8 @@ databasedirs=$(../../bin/getconfig.sh hadoop.datanode.databasedirs)
 print_var databasedirs
 
 
+
+################################################################################
 #
 # make conf
 #
@@ -125,14 +130,23 @@ set_conf_xml_var yarn-site.xml NAMENODE_2 ${m2}
 set_conf_xml_property_value yarn-site.xml yarn.resourcemanager.zk-address "$zk_quorum"
 
 
+# journal node
+echo $journals | sed 's/,/\n/g' \
+> conf/journalnodes
+
+
+# name node
+echo $masters | sed 's/,/\n/g' \
+> conf/namenodes
+
 
 # exit 0
 
-
-# TODO: set ssh no pwd, from namenode to datanode
-
-
+################################################################################
 #
+# copy package and conf, make dir
+#
+
 
 function install()
 {
@@ -142,6 +156,8 @@ function install()
 
     # copy pkg and extract package
     scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
+    echo "copy package end"
+
     ssh $host "
       cd ${CLUSTER_BASEDIR_INSTALL};
       tar xf ${CLUSTER_PROJECT_HADOOP_PKG_NAME}
@@ -175,21 +191,49 @@ function install()
   ../../bin/getconfig.sh hadoop.datanode.hostnames
   ../../bin/getconfig.sh hadoop.journalnode.hostnames
 } | sed 's/[,;]/\n/g' | sort -u | grep -v '^$' \
-| while read host; do
+| while read hadoop_host; do
+    echo "> install $hadoop_host"
+    #{
+    ip=$(../../bin/nametoip.sh $hadoop_host)
+    echo "ip: $ip"
     {
-    ip=$(../../bin/nametoip.sh $host)
-    echo "install  $host($ip) ..."
-    install $ip
+        install $ip
     } &
+    wait
+    echo "> install $hadoop_host end"
+    echo
+    #} &
 done
-wait
-
-
-#fab_options=""
-#    pwd=$(get_pwd $host)
-#    port=$($DIR/getconfig.sh ssh_port)
-#    fab_options="--fabfile=$DIR/../env/fabfile.py --hosts=$ip:$port --password=$pwd"
+#wait
 
 
 
-#rm -rf conf
+################################################################################
+#
+# init hadoop
+#
+
+. admin_env.sh
+
+# start journalnode
+LOG DEBUG "start journal node"
+./journalnode.sh start
+
+# format namenode
+LOG DEBUG "format name node"
+su $CLUSTER_USER -c "cd ${CLUSTER_BASEDIR_INSTALL}/hadoop; ./bin/hdfs namenode -format"
+
+# format zookeeper
+LOG DEBUG "format zookeeper"
+su $CLUSTER_USER -c "cd ${CLUSTER_BASEDIR_INSTALL}/hadoop; ./bin/hdfs zkfc -formatZK"
+
+# 
+LOG DEBUG "stop journal node"
+su $CLUSTER_USER -c './journalnode.sh stop'
+
+
+# TODO copy scripts to namenode
+# scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh $host:${CLUSTER_BASEDIR_INSTALL}/hadoop
+
+
+LOG INFO "install hadoop over"

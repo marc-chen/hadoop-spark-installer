@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 {zookeeper|hadoop|spark} {start|stop}"
+if [ `whoami` != "root" ]; then
+    echo "need run as root"
+    exit 1
+fi
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 {zookeeper|hadoop|spark} {start|stop|...}"
     exit 0
 fi
 
 prj=$1
-act=$2
+shift
 
-echo TODO $prj $act
+if [ -d $prj ]; then
+    cd $prj
+    if [ -f admin_env.sh ]; then
+        . admin_env.sh
+    fi
+
+    ./admin.sh $*
+fi
+
 

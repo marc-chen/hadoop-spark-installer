@@ -26,5 +26,9 @@ export CLUSTER_PROJECT_HADOOP_PKG_NAME=$($DIR/getconfig.sh package.hadoop)
 export CLUSTER_PROJECT_HADOOP_NAME=$(echo ${CLUSTER_PROJECT_HADOOP_PKG_NAME} | awk -F".tar.gz|.tgz" '{print $1}')
 
 
+if [ "$SSH_OPTS" = "" ]; then
+    SSH_OPTS="-o StrictHostKeyChecking=no"
+fi
+
 # TODO: print all evn
 
