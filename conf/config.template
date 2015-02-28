@@ -84,7 +84,7 @@ hadoop.datanode.databasedirs = /data1,/data2
 #
 # master
 # master, 2~3
-spark.master.hostnames = m2.hadoop,m3.hadoop
+spark.master.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
 # slave
 # >1,  suggest same to hadoop.datanode.hostnames
