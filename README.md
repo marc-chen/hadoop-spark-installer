@@ -23,7 +23,7 @@ __master 要求：__
 `./init-master.sh`
 5. 选择一台 master 机器（需要下载安装包），执行如下操作：
 ```bash
-./init-slaves.sh
+./init-all.sh
 ```
 
 手工下载软件包到 packages 目录
