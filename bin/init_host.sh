@@ -1,42 +1,28 @@
 #!/usr/bin/env bash
 
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 ip hostname"
+    exit 1
+fi
+
+ip=$1
+host=$2
+
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 . $DIR/../common/log.sh
-
 . $DIR/utils.sh
 
 
-function get_all_hostname()
-{
-    {
-    $DIR/getconfig.sh admin.hostnames;
-    $DIR/getconfig.sh zookeeper.hostnames;
-    $DIR/getconfig.sh hadoop.namenode.hostnames;
-    $DIR/getconfig.sh hadoop.datanode.hostnames;
-    $DIR/getconfig.sh spark.master.hostnames;
-    $DIR/getconfig.sh spark.slave.hostnames
-    $DIR/getconfig.sh client.hostnames; 
-    } | sed 's/[,;]/\n/g' | sort -u | grep -v '^$'
-}
 
 fab_options=""
 
 
-# 初始化所有的机器
+echo
+LOG DEBUG "init host $host($ip) ..."
+echo
 
-#for host in $(get_all_hostname); do
-grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DIR/../conf/hosts | awk 'NF==2{print $0}' \
-| while read ip host; do
-
-    LOG DEBUG "init host $host($ip) ..."
     # ip=$(./nametoip.sh $host)
-
-    ## set roo ssh no password
-    #{
-    #    $DIR/../env/set_ssh_no_pwd.sh $ip root root
-    #}&
-    #wait
 
 
     pwd=$(get_pwd $host)
@@ -78,12 +64,5 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
 
     LOG INFO "SUCCEED: init host $host($ip)"
 
-    echo
-done
 
-# ssh no pwd, master to slave
-
-# TODO: for all hadoop datanode, init data dir
-
-
-
+echo

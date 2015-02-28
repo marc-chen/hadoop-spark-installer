@@ -4,9 +4,20 @@
 . common/util.sh
 
 
-# set env for scripts after
-. ./bin/set_env.sh
-
+##function get_all_hostname()
+##{
+##    {
+##    $DIR/getconfig.sh admin.hostnames;
+##    $DIR/getconfig.sh zookeeper.hostnames;
+##    $DIR/getconfig.sh hadoop.namenode.hostnames;
+##    $DIR/getconfig.sh hadoop.datanode.hostnames;
+##    $DIR/getconfig.sh spark.master.hostnames;
+##    $DIR/getconfig.sh spark.slave.hostnames
+##    $DIR/getconfig.sh client.hostnames; 
+##    } | sed 's/[,;]/\n/g' | sort -u | grep -v '^$'
+##}
+#
+##for host in $(get_all_hostname); do
 
 # init all slave machines, run after init-master
 
@@ -19,12 +30,19 @@
     #   ssh no pwd
     #   install jdk
     #   hosts
-    echo
-    echo "Init hosts"
-    echo
-    sub_proc ./bin/init_hosts.sh
-    LOG INFO "SUCCEED: init hosts"
-    
+    #echo
+    #echo "Init hosts"
+    #echo
+
+# 其实不只是 slave, 而是所有节点，因为操作是相同的
+
+grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' ./conf/hosts \
+| awk 'NF==2{print $0}' | sort -u \
+| while read ip host; do
+
+    sub_proc ./bin/init_host.sh $ip $host
+
+done    
     
     # check hosts
     #   ntp, time

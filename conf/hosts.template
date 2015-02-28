@@ -1,17 +1,27 @@
 
-# 如果不提供此文件，视为用户已经配置好了所有机关机器的 hostname
-#
-# 提供此文件后，相关机器的 hostname 会被自动替换，且会更新所有相关机器的 /etc/hosts
-# 格式同 /etc/hosts
-# e.g
-# 192.168.0.1 master1.hadoop
-# 192.168.0.2 master2.hadoop
-# 192.168.0.3 master3.hadoop
-# 192.168.0.11 slave1.hadoop
-# 192.168.0.12 slave2.hadoop
-# 192.168.0.13 slave3.hadoop
+# MUST list all machines for the cluster here, and set the hostname for each host
 
-192.168.199.41 m1.hadoop
-192.168.199.42 m2.hadoop
-192.168.199.43 m3.hadoop
+# NOTICE: this config file will be merged to /etc/hosts of all hosts listed here
+
+# NOTICE: cannot be replaced by DNS
+
+#
+# HA example
+#
+
+# masters
+192.168.0.1 master1.hadoop
+192.168.0.2 master2.hadoop
+192.168.0.3 master3.hadoop
+
+# slaves
+192.168.0.11 slave1.hadoop
+192.168.0.12 slave2.hadoop
+192.168.0.13 slave3.hadoop
+
+
+#
+# No-HA example
+#
+# 127.0.0.1 local.hadoop
 
