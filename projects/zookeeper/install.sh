@@ -7,6 +7,7 @@ data_dir="${CLUSTER_BASEDIR_DATA}/zookeeper"
 log_dir="${CLUSTER_BASEDIR_LOG}/zookeeper"
 
 
+################################################################################
 #
 # make conf
 #
@@ -25,6 +26,19 @@ for host in $(echo $install_hosts | sed 's/,/\n/g'); do
 done
 
 
+# admin_env.sh
+{
+    echo "export ZOOKEEPER_USER=${CLUSTER_USER}"
+    echo "export ZOOKEEPER_GROUP=${CLUSTER_GROUP}"
+    echo "export ZOOKEEPER_PREFIX=${CLUSTER_BASEDIR_INSTALL}/zookeeper"
+} > admin_env.sh
+
+
+
+################################################################################
+#
+# install
+#
 
 function install()
 {
@@ -69,6 +83,8 @@ function install()
     ln -s ${CLUSTER_PROJECT_ZK_NAME} zookeeper
     "
 
+    scp -r admin.sh $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_ZK_NAME}/
+
     scp -r conf/* $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_ZK_NAME}/conf/
 
     # set owner, dir
@@ -94,4 +110,4 @@ for host in $(echo $install_hosts | sed 's/,/\n/g'); do
 done
 
 
-rm -rf conf
+# rm -rf conf
