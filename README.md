@@ -66,10 +66,11 @@ TODO: 提供删除脚本，但有些操作不是完全可逆，比如配置用�
 
 
 ## 修改的OS配置：
-hostname
-/etc/hosts
-/etc/profile -> JAVA_HOME
-ssh
-使用的目录：
+* set hostname of all machines (different by OS)
+* /etc/hosts
+* create new user and group defined by config: run.user, run.group
+* install jdk at /usr/java/, and defion JAVA_HOME at last of /etc/profile
+* /root/.ssh, password-less ssh login, from all master to all slave as run.user
+* create directory defined by config: basedir.install, basedir.log, basedir.data
 
 

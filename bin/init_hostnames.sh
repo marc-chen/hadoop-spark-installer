@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . $DIR/../common/log.sh
 . $DIR/utils.sh
 
-
+{
 
 grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DIR/../conf/hosts | awk 'NF==2{print $0}' \
 | while read ip host; do
@@ -32,5 +32,6 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
 
 done
 
-
+} &
+wait
 

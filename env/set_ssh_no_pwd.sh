@@ -9,6 +9,8 @@ if [ $# -lt 1 ] || [ $# -gt 3 ]; then
     exit 1
 fi
 
+{
+
 host=$1
 user="root"
 group="root"
@@ -17,6 +19,8 @@ if [ $# -eq 3 ]; then
     user="$2"
     group="$3"
 fi
+
+echo "> set ssh password-less login to $host as $user"
 
 
 # echo "testing ..."
@@ -39,4 +43,7 @@ sudo -u $user scp ~/.ssh/id_$type.pub $host:~/
 sudo -u $user ssh $host "cd; mkdir -p .ssh; cat id_${type}.pub >> .ssh/authorized_keys; rm id_$type.pub"
 
 echo "set ssh root to $host without password OK"
+
+} &
+wait
 

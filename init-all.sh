@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 . common/log.sh
-. common/util.sh
+. common/utils.sh
 
 
 ##function get_all_hostname()
