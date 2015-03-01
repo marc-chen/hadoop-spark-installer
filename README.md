@@ -15,6 +15,15 @@ __master 要求：__
 * 建议3~100台，硬件、软件配置完全相同，存储、CPU、内存越大越好，参考 hadoop, spark 对硬件要求
 
 
+## 快速安装
+1. 下载
+2. 编辑配置文件：conf/hosts、conf/config
+3. 手工下载软件包到 packages 目录
+4. 执行一键安装：
+```
+./install.sh all
+```
+
 ## 安装过程
 1. 下载本项目所有内容到一台 master 机器
 2. 编辑配置文件：conf/hosts、conf/config

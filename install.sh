@@ -80,10 +80,9 @@ function install_all()
 
 # install project
 
-    # install_proj zookeeper
+    install_proj zookeeper
     # install_proj hadoop
 
-# remove ssh root pwd-less to all
 
 }
 
@@ -126,6 +125,10 @@ for host in $(get_all_master_hostname); do
     scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
 done
 
+
+if [ "$1" == "all" ]; then
+    echo "TODO: remove ssh root pwd-less to all"
+fi
 
 exit 0
 

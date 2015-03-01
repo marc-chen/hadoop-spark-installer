@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [ `whoami` != "root" ]; then
-    echo "need run as root"
+if [ `whoami` == "root" ]; then
+    echo "MUST NOT run as root"
     exit 1
 fi
 

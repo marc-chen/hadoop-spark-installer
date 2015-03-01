@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
 
-# require root
-if [ `whoami` != "root" ]; then
-    echo "need run as root"
-    exit 1
-fi
-
 
 ## only allowed run on namenode machind
 #if [ $(grep "`hostname`:" conf/zoo.cfg | wc -l) -ne 1 ]; then
@@ -38,7 +32,7 @@ fi
 action=$1
 
 for host in $(grep '^server\.' conf/zoo.cfg | cut -d'=' -f2 | cut -d':' -f1 | sort -u); do
-    ssh $SSH_OPTS $host "su $ZOOKEEPER_USER -c 'cd $ZOOKEEPER_PREFIX; ./bin/zkServer.sh $action'"
+    ssh $SSH_OPTS $host "cd $ZOOKEEPER_PREFIX; ./bin/zkServer.sh $action"
 done
 
 

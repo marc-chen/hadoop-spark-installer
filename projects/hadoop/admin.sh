@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 
-# require root
-if [ `whoami` != "root" ]; then
-    echo "need run as root"
-    exit 1
-fi
+## require root
+#if [ `whoami` != "root" ]; then
+#    echo "need run as root"
+#    exit 1
+#fi
 
 
 # only allowed run on namenode machind
