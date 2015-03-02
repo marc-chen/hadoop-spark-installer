@@ -36,13 +36,23 @@ fi
 
 function start()
 {
+    echo "> start journal node"
+    sleep 1
     ./journalnode.sh start
+    echo
+    echo "> start hdfs"
+    sleep 1
     ./daemons.sh hdfs start
 }
 
 function stop()
 {
+    echo "> stop hdfs"
+    sleep 1
     ./daemons.sh hdfs stop
+    echo
+    echo "> stop journal node"
+    sleep 1
     ./journalnode.sh stop
 }
 
@@ -56,6 +66,7 @@ case $1 in
         ;;
     restart)
         stop
+        sleep 1
         start
         ;;
     *)

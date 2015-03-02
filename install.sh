@@ -58,7 +58,7 @@ function install_all()
     # copy to other master
     work_dir="/tmp/spark-installer"
     rm -f ${work_dir}.tar.gz
-    tar --exclude packages --exclude .git -zcvf ${work_dir}.tar.gz .
+    tar --exclude packages --exclude .git --exclude install.sh -zcvf ${work_dir}.tar.gz .
     for host in $(get_all_master_hostname); do
         ssh $SSH_OPTS $host "rm -rf ${work_dir}; mkdir ${work_dir}"
         scp $SSH_OPTS -v ${work_dir}.tar.gz $host:${work_dir}
@@ -81,7 +81,7 @@ function install_all()
 # install project
 
     install_proj zookeeper
-    # install_proj hadoop
+    install_proj hadoop
 
 
 }

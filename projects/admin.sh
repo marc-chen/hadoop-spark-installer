@@ -6,7 +6,7 @@ if [ `whoami` == "root" ]; then
 fi
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 {zookeeper|hadoop|spark} {start|stop|...}"
+    echo "Usage: $0 {zookeeper|hadoop|spark} {start|stop|jps|...}"
     exit 0
 fi
 

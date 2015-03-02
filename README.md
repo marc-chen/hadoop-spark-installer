@@ -57,6 +57,18 @@ __master 要求：__
 Usage: ./admin.sh {zookeeper|hadoop|spark} {start|stop}
 ```
 
+**先启动 zookeeper**
+`./admin.sh zookeeper start`
+
+**再启动，如果是第一次启动 hadoop，需要先初始化一下：**
+```
+cd hadoop
+./namenode_format.sh
+```
+
+**启动 hadoop**
+`./admin.sh hadoop start`
+
 
 ## TODO 其它辅助
 ntp 服务器

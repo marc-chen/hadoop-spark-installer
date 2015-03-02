@@ -39,7 +39,7 @@ slaves=$(../../bin/getconfig.sh hadoop.datanode.hostnames)
 #   number: 2*n+1
 #   qjournal://ns1.spark.bi:8485;ns2.spark.bi:8485;ns3.spark.bi:8485/rt_cluster
 journals=$(../../bin/getconfig.sh hadoop.journalnode.hostnames)
-qjournal=$(echo $journals | sed 's/,/:8485,/g')":8485"
+qjournal=$(echo $journals | sed 's/,/:8485;/g')":8485"
 
 databasedirs=$(../../bin/getconfig.sh hadoop.datanode.databasedirs)
 print_var databasedirs
@@ -162,7 +162,7 @@ function install()
     ssh $SSH_OPTS $host "mkdir -p ${CLUSTER_BASEDIR_INSTALL}"
 
     # copy pkg and extract package
-    ## scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
+    scp ${CLUSTER_PACKAGE_DIR}/${CLUSTER_PROJECT_HADOOP_PKG_NAME} $host:${CLUSTER_BASEDIR_INSTALL}
     echo "copy package end"
 
     ssh $host "
@@ -218,33 +218,9 @@ done
 
 # TODO copy scripts to namenode
 for host in `cat conf/namenodes`; do
-    scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh $host:${HADOOP_PREFIX}
+    scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh namenode_format.sh $host:${HADOOP_PREFIX}
+    ssh $SSH_OPTS $host "chown -R $CLUSTER_USER ${HADOOP_PREFIX}; chgrp -R $CLUSTER_GROUP ${HADOOP_PREFIX}"
 done
 
-################################################################################
-#
-# init hadoop
-#
 
 
-exit 0
-
-# start journalnode
-LOG DEBUG "start journal node"
-./journalnode.sh start
-
-# format namenode
-LOG DEBUG "format name node"
-su $CLUSTER_USER -c "cd ${CLUSTER_BASEDIR_INSTALL}/hadoop; ./bin/hdfs namenode -format"
-
-# format zookeeper
-LOG DEBUG "format zookeeper"
-su $CLUSTER_USER -c "cd ${CLUSTER_BASEDIR_INSTALL}/hadoop; ./bin/hdfs zkfc -formatZK"
-
-# 
-LOG DEBUG "stop journal node"
-su $CLUSTER_USER -c './journalnode.sh stop'
-
-
-
-LOG INFO "install hadoop over"
