@@ -24,7 +24,7 @@ __master 要求：__
 ./install.sh all
 ```
 
-## 安装过程
+## 手动安装
 1. 下载本项目所有内容到一台 master 机器
 2. 编辑配置文件：conf/hosts、conf/config
 3. 如果有其它 master 机器，拷贝此目录到其它的 master 机器
