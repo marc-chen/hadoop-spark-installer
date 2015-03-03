@@ -59,6 +59,7 @@ Usage: ./admin.sh {zookeeper|hadoop|spark} {start|stop}
 
 **先启动 zookeeper**
 `./admin.sh zookeeper start`
+see http://zookeeper.apache.org/ for more info
 
 **再启动，如果是第一次启动 hadoop，需要先初始化一下：**
 ```
@@ -69,7 +70,11 @@ cd -
 
 **启动 hadoop**
 `./admin.sh hadoop start`
+see http://hadoop.apache.org/docs/current/ for more info
 
+** Start Spark**
+`./admin.sh spark start`
+see http://spark.apache.org/docs/latest/index.html
 
 ## TODO 其它辅助
 ntp 服务器
