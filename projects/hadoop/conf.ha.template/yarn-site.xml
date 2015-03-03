@@ -16,6 +16,10 @@
 
 <!-- Site specific YARN configuration properties -->
 
+   <property>
+       <name>yarn.resourcemanager.scheduler.class</name>
+       <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+    </property>
 
     <property>
         <name>yarn.resourcemanager.ha.enabled</name>
