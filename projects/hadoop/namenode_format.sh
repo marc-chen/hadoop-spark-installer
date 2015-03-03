@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
 
-if [ `whoami` == "root" ]; then
-    echo "root is not allowed"
-    exit 1
-fi
+. assert_user.sh
 
+
+# make sure run on namenode machine
 if [ $(./bin/hdfs getconf -namenodes | awk '{print $1; print $2;}' | grep `hostname` | wc -l) -eq 0 ]; then
     echo "please run this script on one namenode machine"
     exit 1
 fi
+
+# make sure only run once
+if [ -d $(./bin/hdfs getconf -confKey dfs.namenode.name.dir | grep -v WARN) ]; then
+    echo "only allow run once, you can re-install or format manually"
+    exit 1
+fi
+
 
 echo
 echo "###########################################################"

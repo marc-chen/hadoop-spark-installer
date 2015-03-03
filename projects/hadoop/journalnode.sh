@@ -1,5 +1,8 @@
 #!/bin/bash
 
+. assert_user.sh
+
+
 if [ $# -ne 1 ]; then
     echo "Usage $0 <start|stop>"
     exit 1

@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-
-## require root
-#if [ `whoami` != "root" ]; then
-#    echo "need run as root"
-#    exit 1
-#fi
+. assert_user.sh
 
 
 # only allowed run on namenode machind
@@ -36,24 +31,16 @@ fi
 
 function start()
 {
-    #echo "> start journal node"
-    #sleep 1
-    #./journalnode.sh start
-    #echo
-    #echo "> start hdfs"
-    #sleep 1
     ./daemons.sh hdfs start
+    sleep 3
+    ./daemons.sh yarn start
 }
 
 function stop()
 {
-    #echo "> stop hdfs"
-    #sleep 1
+    ./daemons.sh yarn stop
+    sleep 3
     ./daemons.sh hdfs stop
-    #echo
-    #echo "> stop journal node"
-    #sleep 1
-    #./journalnode.sh stop
 }
 
 

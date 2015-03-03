@@ -1,5 +1,7 @@
+#!/usr/bin/env bash
 
-#!/bin/bash
+. assert_user.sh
+
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <hdfs|yarn> {start|stop|ha-status}"
