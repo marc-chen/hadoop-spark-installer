@@ -1,5 +1,5 @@
 
-#配置原则：只提供最基本的配置，让系统可以跑起来，其它的过后再调整
+#配置原则：只提供最基本的配置，让系统可以跑起来，其它的需要用户后期再调整
 #
 
 # 格式要求：
@@ -10,29 +10,30 @@
 # master: 管理或辅助节点，要求高可用，建议使用RAID，其它硬件条件普通即可
 # slave : 工作节点，担负集群主要的工作负载，比如 hadoop 存储节点，spark 计算节点
 
-# TODO: 机器强制分为 2 类
-
+# ssh port of all machines
 ssh_port = 22
 
-# default password of root for all hosts
+# default password of root for all machines
 root_passwd_def = 1234
 
-# also support specify one by one
+# also you can specify the pwd one by one
+# e.g
 # root_passwd_192.168.0.1 = 1234
 # root_passwd_m2.hadoop = 1234
 
-# time server
-ntp.server = 192.168.0.1
+# TODO: time syn is required for most projects
+# ntp.server = 192.168.0.1
 
+# set packages, all in dir packages
 package.jdk = jdk-7u65-linux-x64.tar.gz
 package.zookeeper = zookeeper-3.4.6.tar.gz
 package.hadoop = hadoop-2.6.0.tar.gz
-package.spark = spark-1.2.0-bin-hadoop2.4.tgz
+package.spark = spark-1.2.1-bin-hadoop2.4.tgz
 
 
 
 #
-#集群安装根目录
+# 集群安装根目录
 #
 basedir.install = /usr/local/myhadoop
 #
@@ -48,12 +49,10 @@ basedir.data = /usr/local/myhadoop/datas
 run.user = hdfs
 run.group = hadoop
 
-# master
-# 管理集群的节点，每个
-admin.hostnames = m1.hadoop
 
 # master
-# zookeeper，用于协调
+
+# zookeeper，用于协调 leader
 # 机器数量：2n+1
 # 必选
 zookeeper.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
@@ -62,17 +61,14 @@ zookeeper.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 # hadoop
 # 必选
 #
-# master
-# namenode，must 2
+# master: namenode，must 2
 hadoop.namenode.hostnames = m1.hadoop,m2.hadoop
 #
-# slave
-# datanode, > 1 个
-hadoop.datanode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
-#
-# master
-# JournalNode, 2*n+1, Strongly recommended to use the same as zookeeper
+# master: JournalNode, 2*n+1, Strongly recommended to use the same as zookeeper
 hadoop.journalnode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
+#
+# slave: datanode, > 1 个
+hadoop.datanode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
 # base data dir for every datanode
 #   ext3 or ext4, 每个目录属于不同的物理磁盘
@@ -80,18 +76,15 @@ hadoop.datanode.databasedirs = /data1,/data2
 
 #
 # spark
-# 必选
 #
-# master
-# master, 2~3
+# master: 2~3
 spark.master.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
-# slave
-# >1,  suggest same to hadoop.datanode.hostnames
+# slave: >1,  suggest same to hadoop.datanode.hostnames
 spark.slave.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 
 #
-# client，那些需要访问集群服务的机器
+# TODO: client，那些需要访问集群服务的机器
 # 
 # 可选
 #

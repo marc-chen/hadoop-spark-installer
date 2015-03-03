@@ -7,7 +7,6 @@
 ##function get_all_hostname()
 ##{
 ##    {
-##    $DIR/getconfig.sh admin.hostnames;
 ##    $DIR/getconfig.sh zookeeper.hostnames;
 ##    $DIR/getconfig.sh hadoop.namenode.hostnames;
 ##    $DIR/getconfig.sh hadoop.datanode.hostnames;

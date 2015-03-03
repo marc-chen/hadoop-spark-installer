@@ -21,7 +21,7 @@
 
 
 #
-# No-HA example
+# No-HA is not supported now
 #
 # 127.0.0.1 local.hadoop
 
