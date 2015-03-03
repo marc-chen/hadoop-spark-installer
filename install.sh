@@ -6,7 +6,7 @@
 
 function usage()
 {
-    echo "Usage: $0 {all|zookeeper|hadoop}"
+    echo "Usage: $0 {all|zookeeper|hadoop|spark}"
 }
 
 if [ $# -ne 1 ]; then
@@ -38,7 +38,6 @@ function install_proj()
     } > admin_env.sh
 
     ./install.sh
-    # ./remove.sh
     cd -
 }
 
@@ -82,8 +81,7 @@ function install_all()
 
     install_proj zookeeper
     install_proj hadoop
-
-
+    install_proj spark
 }
 
 
@@ -96,12 +94,11 @@ function install_all()
 #    LOG INFO "SUCCEED: check packages"
 
 
-# install zookeeper, hadoop
 case $1 in
     all)
         install_all
         ;;
-    zookeeper|hadoop)
+    zookeeper|hadoop|spark)
         install_proj $1
         ;;
     *)
@@ -110,23 +107,19 @@ case $1 in
 esac
 
 
+# TODO:
 
 # install mysql (single point)
-
-# install spark
 
 # check install
 
 
-# copy admin.sh to install-base-dir
-
-
-for host in $(get_all_master_hostname); do
-    scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
-done
-
-
 if [ "$1" == "all" ]; then
+    # copy admin.sh to install-base-dir
+    for host in $(get_all_master_hostname); do
+        scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
+    done
+
     echo "TODO: remove ssh root pwd-less to all"
 fi
 

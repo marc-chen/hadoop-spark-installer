@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
-
-#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#. $DIR/../../common/log.sh
-#. $DIR/../../bin/utils.sh
 . ./../../common/log.sh
 . ./../../bin/utils.sh
-
 
 
 ################################################################################

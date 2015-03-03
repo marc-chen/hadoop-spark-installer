@@ -28,7 +28,7 @@ done
 for host in $m1 $m2; do
     echo "> clean master $host"
     sleep 1
-    ssh $host "rm -rf $install_dir* $data_dir $log_dir_hdfs $log_dir_yarn"
+    ssh $host "rm -rf ${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME} $install_dir $data_dir $log_dir_hdfs $log_dir_yarn"
     echo
 done
 
