@@ -38,7 +38,7 @@ if [ $c_type == "hdfs" ]; then
             for nn in ${cfg_nn_has}; do
                 echo -n "namenode: $nn "
                 echo -n "health: "
-                echo -n $(cd $HADOOP_PREFIX; ./bin/hdfs haadmin -checkHealth $nn; echo \$?)
+                echo -n $(cd $HADOOP_PREFIX; ./bin/hdfs haadmin -checkHealth $nn; echo $?)
                 echo -n " status: "
                 echo $(cd $HADOOP_PREFIX; ./bin/hdfs haadmin -getServiceState $nn)
             done
@@ -70,7 +70,7 @@ if [ $c_type == "yarn" ]; then
                 # 注意保持格式不变，监控脚本会用到
                 echo -n "resource manager: $n "
                 echo -n "health: "
-                echo -n $(cd $HADOOP_PREFIX; ./bin/yarn rmadmin -checkHealth rm$n; echo \$?)
+                echo -n $(cd $HADOOP_PREFIX; ./bin/yarn rmadmin -checkHealth rm$n; echo $?)
                 echo -n " status: "
                 echo $(cd $HADOOP_PREFIX; ./bin/yarn rmadmin -getServiceState rm$n)
             done

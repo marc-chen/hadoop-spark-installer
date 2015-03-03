@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 all"
+    echo "Usage: $0 all|hadoop"
     exit 1
 fi
+
+if [ "$1" == "hadoop" ]; then
+    cd projects/hadoop;
+    ./remove.sh
+    exit 0
+fi
+
 
 . bin/utils.sh
 
@@ -26,16 +33,18 @@ function clearEnv()
 declare -a arr_rm_dir
 arr_i=0
 cur_dir=`pwd`
-for cf in basedir.install basedir.log basedir.data; do
-    dir=$(./bin/getconfig.sh $cf)
-    # 忽略当前目录，避免误删
-    if [ `echo $dir | grep -a -i $cur_dir | wc -l` -gt 0 ]; then
-        echo "ignore dir same to current: $dir"
-    else
-        echo "will rm dir $dir"
-        arr_rm_dir[$arr_i]="$dir"
-        arr_i=$((arr_i + 1))
-    fi
+for cf in basedir.install basedir.log basedir.data hadoop.datanode.databasedirs; do
+    dirs=$(./bin/getconfig.sh $cf)
+    for dir in `echo "$dirs" | sed 's/,/ /g'`; do
+        # 忽略当前目录，避免误删
+        if [ `echo $dir | grep -a -i $cur_dir | wc -l` -gt 0 ]; then
+            echo "ignore dir same to current: $dir"
+        else
+            echo "will rm dir $dir"
+            arr_rm_dir[$arr_i]="$dir"
+            arr_i=$((arr_i + 1))
+        fi
+    done
 done
 # 再次确认，避免误操作
 echo -n "clean all dir about, sure? (y/n):"
