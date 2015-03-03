@@ -64,6 +64,7 @@ Usage: ./admin.sh {zookeeper|hadoop|spark} {start|stop}
 ```
 cd hadoop
 ./namenode_format.sh
+cd -
 ```
 
 **启动 hadoop**
