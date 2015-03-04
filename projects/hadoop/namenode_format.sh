@@ -21,7 +21,7 @@ echo "###########################################################"
 echo "## WARNING: only run once just after hadoop be installed ##"
 echo "###########################################################"
 echo
-read -p "Press any key to continue ... "
+read -p "Press Enter to continue ... "
 
 
 ################################################################################
@@ -32,7 +32,7 @@ read -p "Press any key to continue ... "
 # start journalnode
 echo "> start journal node"
 sleep 3
-#read -p "Press any key to continue ... "
+#read -p "Press Enter to continue ... "
 ./journalnode.sh start
 echo
 
@@ -44,7 +44,7 @@ echo
 # format namenode
 echo "> format name node"
 sleep 3
-#read -p "Press any key to continue ... "
+#read -p "Press Enter to continue ... "
 ./bin/hdfs namenode -format
 echo
 
@@ -74,7 +74,7 @@ $HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_PREFIX/conf --script hdfs 
 # format zookeeper
 echo "> format zookeeper"
 sleep 3
-#read -p "Press any key to continue ... "
+#read -p "Press Enter to continue ... "
 ./bin/hdfs zkfc -formatZK
 echo
 
@@ -82,7 +82,7 @@ echo
 # 
 echo "> stop journal node"
 sleep 3
-#read -p "Press any key to continue ... "
+#read -p "Press Enter to continue ... "
 ./journalnode.sh stop
 echo
 

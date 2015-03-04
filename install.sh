@@ -58,7 +58,7 @@ function install_all()
     work_dir="/tmp/spark-installer"
     rm -f ${work_dir}.tar.gz
     tar --exclude packages --exclude .git --exclude install.sh -zcvf ${work_dir}.tar.gz .
-    for host in $(get_all_master_hostname); do
+    for host in $(get_all_master_ip); do
         ssh $SSH_OPTS $host "rm -rf ${work_dir}; mkdir ${work_dir}"
         scp $SSH_OPTS -v ${work_dir}.tar.gz $host:${work_dir}
         ssh $SSH_OPTS $host "cd ${work_dir}; tar xvf *.tar.gz"
@@ -68,7 +68,7 @@ function install_all()
 
 
     # init master
-    for host in $(get_all_master_hostname); do
+    for host in $(get_all_master_ip); do
         echo "> init $host as master"
         ssh $SSH_OPTS $host "cd ${work_dir}; ./init-master.sh"
         echo
@@ -77,13 +77,12 @@ function install_all()
     echo "> init all host base env"
     ./init-all.sh
 
-# install project
 
+    # install projects
     install_proj zookeeper
     install_proj hadoop
     install_proj spark
 }
-
 
 
 
@@ -116,7 +115,7 @@ esac
 
 if [ "$1" == "all" ]; then
     # copy admin.sh to install-base-dir
-    for host in $(get_all_master_hostname); do
+    for host in $(get_all_master_ip); do
         scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
     done
 
@@ -124,4 +123,3 @@ if [ "$1" == "all" ]; then
 fi
 
 exit 0
-

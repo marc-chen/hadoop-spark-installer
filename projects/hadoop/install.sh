@@ -169,6 +169,12 @@ function install()
       ln -s ${CLUSTER_PROJECT_HADOOP_NAME} hadoop
     "
 
+    # fix bug of start-dfs.sh fail by filt WARN for native lib
+    ssh $host "
+      cd ${CLUSTER_BASEDIR_INSTALL}/hadoop/sbin
+      sed -r -i '/\\/bin\\/hdfs getconf /s/\\)$/ | grep -v \"WARN.*util.NativeCodeLoader\")/' start-dfs.sh stop-dfs.sh
+    "
+
     # conf
     scp -r conf/* $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME}/conf/
 
@@ -213,7 +219,8 @@ done
 
 # TODO copy scripts to namenode
 for host in `cat conf/namenodes`; do
-    scp $SSH_OPTS -v admin.sh admin_env.sh daemons.sh journalnode.sh namenode_format.sh $host:${HADOOP_PREFIX}
+    host=$(../../bin/nametoip.sh $host)
+    scp $SSH_OPTS -v admin.sh admin_env.sh assert_user.sh daemons.sh journalnode.sh namenode_format.sh $host:${HADOOP_PREFIX}
     ssh $SSH_OPTS $host "chown -R $CLUSTER_USER ${HADOOP_PREFIX}; chgrp -R $CLUSTER_GROUP ${HADOOP_PREFIX}"
 done
 

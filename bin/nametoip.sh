@@ -12,28 +12,49 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . $DIR/../common/log.sh
 
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 hostname"
-    exit 1
-fi
+#if [ $# -lt 1 ]; then
+#    echo "Usage: $0 hostname"
+#    exit 1
+#fi
 
 
-host=$1
+function toip()
+{
+    host=$1
+    
+    # if already is IP, return what it is
+    if [ `echo $host | grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$' | wc -l` -eq 1 ]; then
+        echo $host
+        return
+    fi
+    
+    #
+    # get from conf/hosts
+    #
+    ip=`awk '$2=="'$host'"{print $1}' $DIR/../conf/hosts`
+    if [ -n "$ip" ]; then
+        echo $ip
+        return
+    fi
+    
+    # all hostname must defined in conf/hosts
+    echo "unknown_host_$host"
+}
 
-# if already is IP, return what it is
-if [ `echo $host | grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$' | wc -l` -eq 1 ]; then
-    echo $host
+if [ $# -gt 0 ]; then
+    toip $1
     exit 0
+else
+    while read host; do
+        toip $host
+    done
 fi
 
-#
-# get from conf/hosts
-#
-ip=`awk '$2=="'$host'"{print $1}' $DIR/../conf/hosts`
-if [ -n "$ip" ]; then
-    echo $ip
-    exit 0
-fi
+
+
+exit 0
+
+
 
 #
 # get from sys resolve

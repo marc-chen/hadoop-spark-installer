@@ -14,8 +14,8 @@ databasedirs=$(../../bin/getconfig.sh hadoop.datanode.databasedirs | sed 's/[,;]
 
 # hadoop master
 masters=$(../../bin/getconfig.sh hadoop.namenode.hostnames)
-m1=$(echo $masters | cut -d',' -f1)
-m2=$(echo $masters | cut -d',' -f2)
+m1=$(echo $masters | cut -d',' -f1 | ../../bin/nametoip.sh)
+m2=$(echo $masters | cut -d',' -f2 | ../../bin/nametoip.sh)
 
 
 for host in $m1 $m2; do
@@ -32,11 +32,12 @@ for host in $m1 $m2; do
     echo
 done
 
-slaves=$(../../bin/getconfig.sh hadoop.datanode.hostnames | sed 's/[,;]/ /g')
+slaves=$(../../bin/getconfig.sh hadoop.datanode.hostnames | sed 's/[,;]/\n/g' | ../../bin/nametoip.sh)
 for host in $slaves; do
-    echo "> clean datanode $host data dir"
+    echo "> clean datanode $host data dir: $databasedirs"
     sleep 1
-    ssh $host "rm -rf $databasedirs"
+    ssh $host "rm -rf $databasedirs" &
+    wait
     echo
 done
 

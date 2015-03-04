@@ -63,13 +63,16 @@ function getallhostip()
 function get_all_master_hostname()
 {
   {
-    $UTIL_DIR/getconfig.sh admin.hostnames;
     $UTIL_DIR/getconfig.sh zookeeper.hostnames;
     $UTIL_DIR/getconfig.sh hadoop.namenode.hostnames;
     $UTIL_DIR/getconfig.sh spark.master.hostnames;
   } | sed 's/[,;]/\n/g' | sort -u | grep -v '^$'
 }
 
+function get_all_master_ip()
+{
+    get_all_master_hostname | $UTIL_DIR/nametoip.sh
+}
 
 
 # auto select use fab or not
