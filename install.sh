@@ -42,14 +42,14 @@ function install_proj()
 }
 
 
+# set ssh root pwd-less to all
+for ip in $(getallhostip); do
+    set_ssh_pwd_less_login $ip root root
+done
+echo
+
 function install_all()
 {
-    # set ssh root pwd-less to all
-    for ip in $(getallhostip); do
-        set_ssh_pwd_less_login $ip root root
-    done
-    echo
-
     # set hostname of all machines
     ./bin/init_hostnames.sh
     echo
@@ -119,7 +119,7 @@ if [ "$1" == "all" ]; then
         scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
     done
 
-    echo "TODO: remove ssh root pwd-less to all"
 fi
 
+./remove.sh root-pwd-less
 exit 0

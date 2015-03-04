@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 all|hadoop"
+    echo "Usage: $0 all|hadoop|root-pwd-less"
     exit 1
 fi
 
@@ -28,6 +28,16 @@ function clearEnv()
     # /root/.ssh
     ssh $host 'rm -rf /root/.ssh'
 }
+
+
+if [ "$1" == "root-pwd-less" ]; then
+    for host in $(getallhostip); do
+        echo "> remove $host root password-less ssh"
+        clearEnv $host
+    done
+    exit 0
+fi
+
 
 # 要删除的目录
 declare -a arr_rm_dir
