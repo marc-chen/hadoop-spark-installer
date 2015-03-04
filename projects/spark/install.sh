@@ -121,6 +121,7 @@ done
 
 
 for host in $masters; do
+    host=$(../../bin/nametoip.sh $host)
     scp $SSH_OPTS -v admin.sh admin_env.sh $host:${SPARK_PREFIX}
     ssh $SSH_OPTS $host "chown -R $CLUSTER_USER ${SPARK_PREFIX}; chgrp -R $CLUSTER_GROUP ${SPARK_PREFIX}"
 done
