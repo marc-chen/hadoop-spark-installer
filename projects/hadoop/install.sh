@@ -172,8 +172,9 @@ function install()
     # fix bug of start-dfs.sh fail by filt WARN for native lib
     ssh $host "
       cd ${CLUSTER_BASEDIR_INSTALL}/hadoop/sbin
-      sed -r -i '/\\/bin\\/hdfs getconf /s/\\)$/ | grep -v \"WARN.*util.NativeCodeLoader\")/' start-dfs.sh stop-dfs.sh
+      sed -r -i '/\\/bin\\/hdfs getconf /s/\\)$/ | tail -1)/' start-dfs.sh stop-dfs.sh
     "
+    # sed -r -i '/\\/bin\\/hdfs getconf /s/\\)$/ | grep -v \"WARN.*util.NativeCodeLoader\")/' start-dfs.sh stop-dfs.sh
 
     # conf
     scp -r conf/* $host:${CLUSTER_BASEDIR_INSTALL}/${CLUSTER_PROJECT_HADOOP_NAME}/conf/
