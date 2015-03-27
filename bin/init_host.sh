@@ -55,7 +55,8 @@ echo
     # JDK
     jdk_pkg=$($DIR/getconfig.sh package.jdk)
     pkg_dir="$DIR/../packages"
-    fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=1.7.0_65"
+    jdk_ver=`tar tf $pkg_dir/$jdk_pkg | head -1 | grep -Po '\d[^/]*'`
+    fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=$jdk_ver"
 
 
     # TODO: ntp
