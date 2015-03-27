@@ -19,6 +19,10 @@ fi
 . ./bin/set_env.sh
 
 
+./bin/chk_config.sh
+LOG INFO "check config SUCCEED"
+
+
 function install_proj()
 {
     proj=$1
@@ -42,11 +46,22 @@ function install_proj()
 }
 
 
+# TODO: check when installing the project
+#    # check packages
+#    sub_proc ./bin/chk_packages.sh 
+#    LOG INFO "SUCCEED: check packages"
+
+
+
 # set ssh root pwd-less to all
 for ip in $(getallhostip); do
     set_ssh_pwd_less_login $ip root root
 done
 echo
+
+if [ "$1" == "pwd-less" ]; then
+    exit 0
+fi
 
 function install_all()
 {
@@ -68,6 +83,8 @@ function install_all()
 
 
     # init master
+    # TODO: 降低要求，master 机器不需要安装 fab，仅当前机器
+    #   方法：init-master 的工作由当前机器进行，步骤拆分一下，先 ken-gen，然后拉回本地，再追加到目标机器
     for host in $(get_all_master_ip); do
         echo "> init $host as master"
         ssh $SSH_OPTS $host "cd ${work_dir}; ./init-master.sh"
@@ -85,12 +102,6 @@ function install_all()
 }
 
 
-
-
-# TODO: check when installing the project
-#    # check packages
-#    sub_proc ./bin/chk_packages.sh 
-#    LOG INFO "SUCCEED: check packages"
 
 
 case $1 in

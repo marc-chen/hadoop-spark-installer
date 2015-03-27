@@ -3,10 +3,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . $DIR/../common/log.sh
 
+cfg_value=""
 function cfg_require()
 {
     k=$1
     v=`$DIR/getconfig.sh $k`
+    cfg_value="$v"
     LOG DEBUG "get $k = $v"
     if [ -z "$v" ]; then
         LOG ERROR "config $k is required"
@@ -14,8 +16,11 @@ function cfg_require()
     fi
 }
 
+declare -a cfg_value_arr
 function cfg_require_hostname_lists()
 {
+    unset cfg_value_arr
+    echo "check config $k ..."
     k=$1
     v=`$DIR/getconfig.sh $k`
     LOG DEBUG "get $k = $v"
@@ -23,23 +28,40 @@ function cfg_require_hostname_lists()
         LOG ERROR "config $k is required"
         exit 1
     fi
-    echo $v | sed 's/[,;]/\n/g' | while read host; do
-        ping -c 1 -W 3 $host > /dev/null 2>&1
-        # TODO: hostname 可能还没配置好，此时检查注定失败
+    i=0
+    # echo $v | sed 's/[,;]/\n/g' | while read host; do
+    for host in `echo $v | sed 's/[,;]/\n/g'`; do
+        ip=`$DIR/nametoip.sh $host | grep -v '^unknown_host'`
+        if [ -z "$ip" ]; then
+            LOG ERROR "unknown host $host, maybe not defined in conf/hosts"
+            exit 1
+        fi
+        ping -c 1 -W 3 $ip > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            LOG ERROR "$host unreachable"
+            exit 1
+        fi
+        cfg_value_arr[$i]=$host
+        i=$((i+1))
     done
 }
 
+
+
+# TODO: ntp server
+
 v=`$DIR/getconfig.sh ntp.server`
 if [ -z "$v" ]; then
-    LOG ERROR "config ntp.server is empty, time sync is strongly suggested"
-    exit 1
+    LOG WARN "config ntp.server is empty, time sync is strongly suggested"
+    sleep 3
+    # exit 1
 else
-    LOG INFO "TODO: check ntp server"
+    LOG DEBUG "TODO: check ntp server"
   if [ 0 -gt 1 ]; then
     /usr/sbin/ntpdate -t 3 $v > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         LOG ERROR "ntp.server $v error"
-        # TODO
+        sleep 3
         # exit 1
     else
         LOG INFO "check config ntp.server SUCCEED"
@@ -48,29 +70,103 @@ else
 fi
 
 
+
+# ssh port, pwd
+
+cfg_require ssh_port
+cfg_require root_passwd_def
+
+
+
+# packages
+
+os_bit=`getconf LONG_BIT`
+if [ "$os_bit" == "64" ]; then
+    echo "check OS 64 bit"
+else
+    echo "require 64 bit OS"
+    exit 1
+fi
+
 cfg_require package.jdk
+if [ `echo "$cfg_value" | grep 64 | wc -l` -eq 0 ]; then
+    LOG ERROR "require x64 version of JDK"
+    exit 1
+fi
+
 cfg_require package.zookeeper
 cfg_require package.hadoop
 cfg_require package.spark
 
-# TODO: set default 
+
+
+# public dir
 
 cfg_require basedir.install
 cfg_require basedir.log
 cfg_require basedir.data
 
+
+
+# run user, group
+
 cfg_require run.user
-cfg_require_hostname_lists admin.hostnames
+cfg_require run.group
+
+
+
+# zookeeper
 
 cfg_require_hostname_lists zookeeper.hostnames
+n=${#cfg_value_arr[*]}
+echo ${cfg_value_arr[*]}
+echo $n
+if [ $((n%2)) -ne 1 ]; then
+    LOG ERROR "zookeeper host' count must be an odd number: 2n+1"
+    exit 1
+fi
+
+
+
+# hadoop
 
 cfg_require_hostname_lists hadoop.namenode.hostnames
+n=${#cfg_value_arr[*]}
+if [ $n -ne 2 ]; then
+    LOG ERROR "require exactly 2 hadoop namenode"
+    exit 1
+fi
+
+cfg_require_hostname_lists hadoop.journalnode.hostnames
+n=${#cfg_value_arr[*]}
+if [ $((n%2)) -ne 1 ]; then
+    LOG ERROR "hadoop journalnode's count must be an odd number: 2n+1"
+    exit 1
+fi
+
 cfg_require_hostname_lists hadoop.datanode.hostnames
+n=${#cfg_value_arr[*]}
+if [ $n -lt 2 ]; then
+    LOG ERROR "require at least 2 hadoop datanode"
+    exit 1
+fi
+
 cfg_require hadoop.datanode.databasedirs
 
-cfg_require_hostname_lists spark.master.hostnames
-cfg_require_hostname_lists spark.slave.hostnames
 
-# cfg_require client.hostnames
+# spark
+
+cfg_require_hostname_lists spark.master.hostnames
+if [ ${#cfg_value_arr[*]} -lt 2 ]; then
+    LOG ERROR "require at least 2 spark masters"
+    exit 1
+fi
+
+cfg_require_hostname_lists spark.slave.hostnames
+if [ ${#cfg_value_arr[*]} -lt 2 ]; then
+    LOG ERROR "require at least 2 spark slaves"
+    exit 1
+fi
+
 
 
