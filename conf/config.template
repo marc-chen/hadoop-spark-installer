@@ -46,7 +46,7 @@ basedir.data = /usr/local/myhadoop/datas
 #
 # 所有服务使用相同的账号运行
 #
-run.user = hdfs
+run.user  = hadoop
 run.group = hadoop
 
 
@@ -72,7 +72,7 @@ hadoop.datanode.hostnames = m1.hadoop,m2.hadoop,m3.hadoop
 #
 # base data dir for every datanode
 #   ext3 or ext4, 每个目录属于不同的物理磁盘
-hadoop.datanode.databasedirs = /data1,/data2
+hadoop.datanode.databasedirs = /usr/local/myhadoop/datas/datanodedir
 
 #
 # spark
