@@ -27,7 +27,7 @@ def add_user_group(user='hdfs', group='cluster'):
         groupadd $grp
     fi
     if [ `grep "^$user:" /etc/passwd | wc -l` -eq 0 ]; then
-        useradd -m -g $grp $user
+        useradd --shell /bin/bash -m -g $grp $user
     fi
     if [ `su $user -c 'groups'` != "$grp" ]; then
         usermod -g $grp $user
@@ -187,15 +187,15 @@ def install_jdk_tar(tarpath, ver):
         run("""
             pkg=`basename %s`
             tar xf $pkg
+            jdkdir=`tar tf $pkg | head -1 | cut -d '/' -f1`
             rm -f $pkg
 
             mkdir -p /usr/java/
-            jdkdir=jdk%s
             mv $jdkdir /usr/java/
             rm -f /usr/java/latest /usr/java/default
             ln -s /usr/java/$jdkdir /usr/java/latest
             ln -s /usr/java/latest /usr/java/default
-        """ % (tarpath, ver)
+        """ % (tarpath)
         )
 
         # set JAVA_HOME
