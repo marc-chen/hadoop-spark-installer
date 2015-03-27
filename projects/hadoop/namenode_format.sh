@@ -4,13 +4,13 @@
 
 
 # make sure run on namenode machine
-if [ $(./bin/hdfs getconf -namenodes | awk '{print $1; print $2;}' | grep `hostname` | wc -l) -eq 0 ]; then
+if [ $(./bin/hdfs getconf -namenodes | tail -1 | awk '{print $1; print $2;}' | grep `hostname` | wc -l) -eq 0 ]; then
     echo "please run this script on one namenode machine"
     exit 1
 fi
 
 # make sure only run once
-if [ -d $(./bin/hdfs getconf -confKey dfs.namenode.name.dir | grep -v WARN) ]; then
+if [ -d $(./bin/hdfs getconf -confKey dfs.namenode.name.dir | tail -1) ]; then
     echo "only allow run once, you can re-install or format manually"
     exit 1
 fi
@@ -61,7 +61,7 @@ sleep 5
 # start other namenode
 echo "> start other namenode -bootstrapStandby"
 sleep 3
-other_master=$(./bin/hdfs getconf -namenodes | grep -v WARN | tail -1 | awk '{print $1; print $2;}' | grep -v `hostname`)
+other_master=$(./bin/hdfs getconf -namenodes | tail -1 | awk '{print $1; print $2;}' | grep -v `hostname`)
 ssh $SSH_OPTS $other_master "cd $HADOOP_PREFIX; ./bin/hdfs namenode -bootstrapStandby"
 
 
