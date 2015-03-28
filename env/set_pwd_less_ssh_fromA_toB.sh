@@ -65,7 +65,7 @@ ssh ${host_dst} "cd ${home_dst}; cat id_$type.pub >> .ssh/authorized_keys; rm id
 
 
 # test
-ssh ${host_src} "su hdfs -c 'ssh ${host_dst} pwd'" > /dev/null 2>&1
+ssh -o StrictHostKeyChecking=no ${host_src} "su hdfs -c 'ssh -o StrictHostKeyChecking=no ${host_dst} pwd'" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "set pwd-less ssh from $host_src to $host_dst SUCCEED"
 else
