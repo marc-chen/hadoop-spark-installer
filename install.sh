@@ -6,7 +6,7 @@
 
 function usage()
 {
-    echo "Usage: $0 {all|zookeeper|hadoop|spark}"
+    echo "Usage: $0 {all|zookeeper|hadoop|spark|pwd-less}"
 }
 
 if [ $# -ne 1 ]; then
@@ -15,12 +15,65 @@ if [ $# -ne 1 ]; then
 fi
 
 
+################################################################################
+# local env
+#
+
+
+#
+# check python, fab
+#
+
+# fab, fab --version: Fabric 1.8.2, Paramiko 1.10.1
+which fab > /dev/null 2>&1
+if [ $? -ne 0 ] || [ ! -f `which fab` ]; then
+    LOG ERROR "fab is required"
+    exit 1
+fi
+#which apt-get > /dev/null 2>&1
+#if [ $? -eq 0 ]; then
+#    apt-get -y install fabric
+#fi
+
+
+
 # set base env for scripts following
 . ./bin/set_env.sh
 
+# dir for packages
+mkdir -p ${CLUSTER_PACKAGE_DIR}
+
 
 ./bin/chk_config.sh
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 LOG INFO "check config SUCCEED"
+sleep 1
+
+
+
+################################################################################
+# pwd-less
+#
+
+
+# set ssh root pwd-less to all
+for ip in $(getallhostip); do
+    set_ssh_pwd_less_login $ip root
+done
+echo
+
+
+if [ "$1" == "pwd-less" ]; then
+    exit 0
+fi
+
+
+
+################################################################################
+# install
+#
 
 
 function install_proj()
@@ -46,24 +99,7 @@ function install_proj()
 }
 
 
-# TODO: check when installing the project
-#    # check packages
-#    sub_proc ./bin/chk_packages.sh 
-#    LOG INFO "SUCCEED: check packages"
-
-
-
-# set ssh root pwd-less to all
-for ip in $(getallhostip); do
-    set_ssh_pwd_less_login $ip root root
-done
-echo
-
-if [ "$1" == "pwd-less" ]; then
-    exit 0
-fi
-
-function install_all()
+function install_env()
 {
     # set hostname of all machines
     ./bin/init_hostnames.sh
@@ -73,6 +109,7 @@ function install_all()
     work_dir="/tmp/spark-installer"
     rm -f ${work_dir}.tar.gz
     tar --exclude packages --exclude .git --exclude install.sh -zcvf ${work_dir}.tar.gz .
+
     for host in $(get_all_master_ip); do
         ssh $SSH_OPTS $host "rm -rf ${work_dir}; mkdir ${work_dir}"
         scp $SSH_OPTS -v ${work_dir}.tar.gz $host:${work_dir}
@@ -85,11 +122,7 @@ function install_all()
     # init master
     # TODO: 降低要求，master 机器不需要安装 fab，仅当前机器
     #   方法：init-master 的工作由当前机器进行，步骤拆分一下，先 ken-gen，然后拉回本地，再追加到目标机器
-    for host in $(get_all_master_ip); do
-        echo "> init $host as master"
-        ssh $SSH_OPTS $host "cd ${work_dir}; ./init-master.sh"
-        echo
-    done
+    ./init-master.sh
 
     echo "> init all host base env"
     ./init-all.sh
@@ -103,10 +136,14 @@ function install_all()
 
 
 
+################################################################################
 
 case $1 in
     all)
-        install_all
+        install_env
+        install_proj zookeeper
+        install_proj hadoop
+        install_proj spark
         ;;
     zookeeper|hadoop|spark)
         install_proj $1
@@ -118,19 +155,18 @@ esac
 
 
 # TODO:
-
-# install mysql (single point)
-
-# check install
+#   install mysql (single point)
+#   check if installing is succeed
 
 
-if [ "$1" == "all" ]; then
+#if [ "$1" == "all" ]; then
     # copy admin.sh to install-base-dir
     for host in $(get_all_master_ip); do
         scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
     done
 
-fi
+#fi
 
 ./remove.sh root-pwd-less
 exit 0
+
