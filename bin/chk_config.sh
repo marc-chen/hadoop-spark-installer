@@ -88,16 +88,31 @@ else
     exit 1
 fi
 
+function chk_pkg_file()
+{
+    url="$1"
+    if [ ! -f ${CLUSTER_PACKAGE_DIR}/$cfg_value ]; then
+        LOG ERROR "package not found!"
+        LOG INFO  "download page: $url"
+        LOG INFO  "mirrors.cnnic.cn is best for China Telecom users"
+        exit 1
+    fi
+}
+
 cfg_require package.jdk
+chk_pkg_file "http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html"
 if [ `echo "$cfg_value" | grep 64 | wc -l` -eq 0 ]; then
     LOG ERROR "require x64 version of JDK"
     exit 1
 fi
 
-cfg_require package.zookeeper
-cfg_require package.hadoop
-cfg_require package.spark
 
+cfg_require package.zookeeper
+chk_pkg_file "http://www.apache.org/dyn/closer.cgi/zookeeper/"
+cfg_require package.hadoop
+chk_pkg_file "http://www.apache.org/dyn/closer.cgi/hadoop/common/"
+cfg_require package.spark
+chk_pkg_file "http://spark.apache.org/downloads.html"
 
 
 # public dir
