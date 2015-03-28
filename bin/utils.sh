@@ -80,25 +80,25 @@ function set_ssh_pwd_less_login()
 {
     host=$1
     user=$2
-    group=$3
 
     ip=$($UTIL_DIR/nametoip.sh $host)
     port=$($UTIL_DIR/getconfig.sh ssh_port)
     pwd=$(get_pwd $host)
 
-    echo "> set password-less ssh to $host($ip:$port) as $user:$group"
+    echo "> set password-less ssh to $host($ip:$port) as $user"
 
     which fab > /dev/null
     if [ $? -ne 0 ]; then
         # if fab not installed, use shell
         {
-            $UTIL_DIR/../env/set_ssh_no_pwd.sh $ip $user $group
+            $UTIL_DIR/../env/set_ssh_no_pwd.sh $ip $user
         }&
         wait
     else
         fab_options="--fabfile=$UTIL_DIR/../env/fab_pwd_less_ssh.py --hosts=$ip:$port --password=$pwd"
         fab_command "set_pwd_less_ssh:user=$user"
     fi
+    ssh -o StrictHostKeyChecking=no $ip pwd > /dev/null 2>&1
 }
 
 
