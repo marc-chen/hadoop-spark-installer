@@ -58,7 +58,7 @@ ssh ${host_dst} "su $user -c 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; touch ~
 
 # cp to B
 scp ./id_$type.pub ${host_dst}:${home_dst}/ > /dev/null 2>&1
-
+rm ./id_$type.pub
 
 # merge to authorized_keys, and uniq file
 ssh ${host_dst} "cd ${home_dst}; cat id_$type.pub >> .ssh/authorized_keys; rm id_$type.pub; sort .ssh/authorized_keys | uniq > t.\$\$; cat t.\$\$ > .ssh/authorized_keys; rm t.\$\$"
