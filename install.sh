@@ -44,10 +44,7 @@ fi
 mkdir -p ${CLUSTER_PACKAGE_DIR}
 
 
-./bin/chk_config.sh
-if [ $? -ne 0 ]; then
-    exit 1
-fi
+sub_proc ./bin/chk_config.sh;
 LOG INFO "check config SUCCEED"
 sleep 1
 
@@ -57,18 +54,14 @@ sleep 1
 # pwd-less
 #
 
-
-# set ssh root pwd-less to all
-for ip in $(getallhostip); do
-    set_ssh_pwd_less_login $ip root
-done
-echo
-
-
-if [ "$1" == "pwd-less" ]; then
-    exit 0
-fi
-
+function set_root_pwdless() {
+	# set ssh root pwd-less to all
+	for ip in $(getallhostip); do
+	    sub_proc set_ssh_pwd_less_login $ip root
+	    LOG INFO "set pwdless login $ip SUCCEED";
+	done
+	echo
+}
 
 
 ################################################################################
@@ -101,8 +94,11 @@ function install_proj()
 
 function install_env()
 {
+    set_root_pwdless;
+
     # set hostname of all machines
-    ./bin/init_hostnames.sh
+    sub_proc ./bin/init_hostnames.sh
+    LOG INFO "set hostname for all hosts SUCCEED";
     echo
 
     # copy to other master
@@ -110,28 +106,34 @@ function install_env()
     rm -f ${work_dir}.tar.gz
     tar --exclude packages --exclude .git --exclude install.sh -zcvf ${work_dir}.tar.gz .
 
+    # for host in $(get_all_master_hostname); do
     for host in $(get_all_master_ip); do
         ssh $SSH_OPTS $host "rm -rf ${work_dir}; mkdir ${work_dir}"
         scp $SSH_OPTS -v ${work_dir}.tar.gz $host:${work_dir}
         ssh $SSH_OPTS $host "cd ${work_dir}; tar xvf *.tar.gz"
+        LOG INFO "copy install package to $host SUCCEED";
         echo
     done
     echo
+
+    # init user/group/datadir/...
+    echo "> init all host base env"
+    sub_proc ./init-all.sh
+    LOG INFO "init all SUCCEED";
 
 
     # init master
     # TODO: 降低要求，master 机器不需要安装 fab，仅当前机器
     #   方法：init-master 的工作由当前机器进行，步骤拆分一下，先 ken-gen，然后拉回本地，再追加到目标机器
-    ./init-master.sh
-
-    echo "> init all host base env"
-    ./init-all.sh
+    sub_proc ./init-master.sh
+    LOG INFO "init master SUCCEED";
 
 
     # install projects
-    install_proj zookeeper
-    install_proj hadoop
-    install_proj spark
+    # 重复了，去掉
+    #install_proj zookeeper
+    #install_proj hadoop
+    #install_proj spark
 }
 
 
@@ -139,14 +141,24 @@ function install_env()
 ################################################################################
 
 case $1 in
-    all)
-        install_env
-        install_proj zookeeper
-        install_proj hadoop
-        install_proj spark
-        ;;
     zookeeper|hadoop|spark)
-        install_proj $1
+        sub_proc install_proj $1
+		LOG INFO "install $1 SUCCEED";
+        ;;
+    pwd-less )
+	sub_proc set_root_pwdless;
+	LOG INFO "set root pwdless SUCCEED";
+	exit 0;
+	;;
+    all)
+        sub_proc install_env;
+		LOG INFO "install env SUCCEED";
+        sub_proc install_proj zookeeper
+		LOG INFO "install zookeeper SUCCEED";
+        sub_proc install_proj hadoop
+		LOG INFO "install hadoop SUCCEED";
+        sub_proc install_proj spark
+		LOG INFO "install spark SUCCEED";
         ;;
     *)
         usage
@@ -164,9 +176,12 @@ esac
     for host in $(get_all_master_ip); do
         scp $SSH_OPTS -v projects/admin.sh $host:${CLUSTER_BASEDIR_INSTALL}
     done
+    LOG INFO "scp admin.sh to all hosts SUCCEED";
 
 #fi
 
-./remove.sh root-pwd-less
+#sub_proc ./remove.sh root-pwd-less
+
+LOG INFO "Conguatulations! all install SUCCEED";
 exit 0
 

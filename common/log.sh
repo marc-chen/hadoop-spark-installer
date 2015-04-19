@@ -44,6 +44,18 @@ function _log_lvl_str_to_int()
     esac
 }
 
+function show_color() {
+    #Usage:4 parameters are needed!
+    #      ForeColor,BackgroundClor Style and Text!
+  Fg="3""$1"
+  Bg="4""$2"
+  SetColor="\E[""$Fg;$Bg""m"
+  Style="\033[""$3""m"
+  Text="$4"
+  EndStyle="\033[0m"
+  echo -ne "$SetColor""$Style""$Text""$EndStyle"
+}
+
 # return 1: matched, should print log
 function _log_chk_lvl()
 {
@@ -52,7 +64,7 @@ function _log_chk_lvl()
     if [ $lvl_user -lt $lvl ]; then
         echo -n 0
     else
-        echo -n 1
+        echo -n $lvl_user
     fi
 }
 function _log_make_msg()
@@ -110,9 +122,15 @@ function LOG()
         return
     fi
 
-    if [ $(_log_chk_lvl $1) -gt 0 ]; then
+    if [ $(_log_chk_lvl $1) -eq 20 ]; then
+	echo $(show_color 6 10 1 "$(_log_make_msg $@)");
+    else if [ $(_log_chk_lvl $1) -eq 30 ]; then
+	echo $(show_color 3 10 1 "$(_log_make_msg $@)");
+    else if [ $(_log_chk_lvl $1) -eq 40 ]; then
+	echo $(show_color 1 10 1 "$(_log_make_msg $@)");
+    else if [ $(_log_chk_lvl $1) -gt 0 ]; then
         echo $(_log_make_msg "$@")
-    fi
+    fi; fi; fi; fi;
 }
 
 

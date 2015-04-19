@@ -96,9 +96,9 @@ function set_ssh_pwd_less_login()
         wait
     else
         fab_options="--fabfile=$UTIL_DIR/../env/fab_pwd_less_ssh.py --hosts=$ip:$port --password=$pwd"
-        fab_command "set_pwd_less_ssh:user=$user"
+        fab_command "set_pwd_less_ssh:user=$user" "set pwdless user $user for $host[$ip]";
     fi
-    ssh -o StrictHostKeyChecking=no $ip pwd > /dev/null 2>&1
+    ssh -o StrictHostKeyChecking=no $ip pwd #> /dev/null 2>&1
 }
 
 

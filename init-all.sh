@@ -42,6 +42,10 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' ./c
     sub_proc ./bin/init_host.sh $ip $host
 
 done    
+if [ $? -ne 0 ]; then
+    LOG ERROR "init host failed";
+    exit 1;
+fi;
     
     # check hosts
     #   ntp, time

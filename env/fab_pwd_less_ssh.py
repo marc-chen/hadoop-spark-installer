@@ -18,11 +18,11 @@ def set_pwd_less_ssh(user):
     local_hostname=local("""hostname""", capture=True)
     key_id="%s@%s" % (user, local_hostname)
     local_user_home=local("""grep "^%s:" /etc/passwd | cut -d':' -f6 """ % user, capture=True)
-    # print "local_user_home: " + local_user_home
+    print "local_user_home: " + local_user_home
 
     remote_user_home=run("su -c 'cd; pwd' %s" % user)
     remote_user_group=run("su -c 'groups' %s" % user)
-    # print "remote_user_home: %s" % remote_user_home
+    print "remote_user_home: %s %s" % (remote_user_home, run("whoami"))
 
     # gen key
     local("""
@@ -36,23 +36,24 @@ def set_pwd_less_ssh(user):
     pubfile = "id_%s.pub" % key_type
     put("%s/.ssh/%s" % (local_user_home, pubfile), remote_user_home)
 
+    # Too violent
+    #    if [ -f $home/.ssh/authorized_keys ]; then
+    #        sed -i '/^ssh-%s .* %s$|^$/d' $home/.ssh/authorized_keys
+    #    fi
     run("""
         home="%s"
     
         mkdir -p $home/.ssh;
-        if [ -f $home/.ssh/authorized_keys ]; then
-            sed -i '/^ssh-%s .* %s$|^$/d' $home/.ssh/authorized_keys
-        fi
     
         cat   $home/%s >> $home/.ssh/authorized_keys;
-        rm    $home/%s;
+        mv    $home/%s $home/.ssh/pubkey_hadoop_inst;
     
         chown -R %s $home/.ssh
         chgrp -R %s $home/.ssh
     
         chmod 600 $home/.ssh/authorized_keys
         chmod 700 $home/.ssh
-        """ % ( remote_user_home, key_type, key_id,  pubfile, pubfile, user, remote_user_group )
+        """ % ( remote_user_home, pubfile, pubfile, user, remote_user_group )
     )
 
 

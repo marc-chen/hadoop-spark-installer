@@ -13,16 +13,16 @@ slaves=`echo "$slaves" | sed 's/[,; ]/\n/g' | sort -u | grep -v '^$'`
 
 user=$(./bin/getconfig.sh run.user)
 
+echo "slave: $slaves";
+echo "user: $user";
+
 for m in $(get_all_master_ip); do
     for s in $slaves; do
         echo $m $s
         sip=$(./bin/nametoip.sh $s)
-        ./env/set_pwd_less_ssh_fromA_toB.sh $m $sip $user
-        r=$?
-        if [ $r -ne 0 ]; then
-            exit $r
-        fi
+        sub_proc ./env/set_pwd_less_ssh_fromA_toB.sh $m $sip $user
     done
+    LOG INFO "init master $m done";
 done
 
 

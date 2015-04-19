@@ -33,7 +33,8 @@ function clearEnv()
 if [ "$1" == "root-pwd-less" ]; then
     for host in $(getallhostip); do
         echo "> remove $host root password-less ssh"
-        ssh $host 'rm -rf /root/.ssh'
+        #ssh $host 'rm -rf /root/.ssh'
+        ssh $host 'sed -i "//d" /root/.ssh/authorized_keys; rm -f /root/.ssh/pubkey_hadoop_inst';
     done
     exit 0
 fi

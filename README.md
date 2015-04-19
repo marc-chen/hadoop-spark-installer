@@ -20,6 +20,8 @@ __master 要求：__
 2. 编辑配置文件：conf/hosts、conf/config
 3. 手工下载软件包到 packages 目录
 4. 执行一键安装：
+5. 确保直接使用root登录执行安装，不要使用su，否则fabric可能出现不兼容的情况
+6. 如果密钥登录不起作用，尝试重启下sshd
 ```
 ./install.sh all
 ```
@@ -52,6 +54,7 @@ __master 要求：__
 
 进入 master 机器的安装目录，比如 /usr/local/myhadoop/
 执行 admin.sh 会看到帮助信息
+先检查iptables是否放开了策略
 ```
 > ./admin.sh
 Usage: ./admin.sh {zookeeper|hadoop|spark} {start|stop}

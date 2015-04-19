@@ -40,27 +40,27 @@ echo
     # add user, group
     user=$($DIR/getconfig.sh run.user)
     group=$($DIR/getconfig.sh run.group)
-    fab_command "add_user_group:user=$user,group=$group"
+    fab_command "add_user_group:user=$user,group=$group" "add usergroup for $host[$ip]"
 
 
     # base dir
     dir=$($DIR/getconfig.sh basedir.install)
-    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group" "init basedir $dir for $host[$ip]"
     dir=$($DIR/getconfig.sh basedir.log)
-    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group" "init basedir $dir for $host[$ip]"
     dir=$($DIR/getconfig.sh basedir.data)
-    fab_command "init_base_dir:dir=$dir,user=$user,group=$group"
+    fab_command "init_base_dir:dir=$dir,user=$user,group=$group" "init basedir $dir for $host[$ip]"
 
 
     # JDK
     jdk_pkg=$($DIR/getconfig.sh package.jdk)
     pkg_dir="$DIR/../packages"
     jdk_ver=`tar tf $pkg_dir/$jdk_pkg | head -1 | grep -Po '\d[^/]*'`
-    fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=$jdk_ver"
+    fab_command "install_jdk_tar:tarpath=$pkg_dir/$jdk_pkg,ver=$jdk_ver" "install jdk $jdk_ver for $host[$ip]"
 
 
     # TODO: ntp
-    LOG INFO "TODO: add ntpupdate to crontab"
+    LOG DEBUG "TODO: add ntpupdate to crontab"
 
 
     LOG INFO "SUCCEED: init host $host($ip)"

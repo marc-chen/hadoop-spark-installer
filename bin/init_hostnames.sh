@@ -28,7 +28,7 @@ grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $DI
     fab_command "set_hostname:name=$host" "set $ip hostname to $host"
 
     # append hosts to /etc/hosts
-    fab_command "append_to_etc_hosts:hosts_file=$DIR/../conf/hosts"
+    fab_command "append_to_etc_hosts:hosts_file=$DIR/../conf/hosts" "append to /etc/hosts $ip->$host"
 
 done
 

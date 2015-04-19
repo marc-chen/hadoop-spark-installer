@@ -2,6 +2,8 @@
 
 # 配置从机器A到机器B的免密码 ssh 登录
 # 前提：本机到 A、B 已经配置了免密码登录
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. $DIR/../common/log.sh
 
 if [ $# -ne 3 ]; then
     echo "Usage: $0 SRC_IP DST_IP user"
@@ -15,14 +17,16 @@ user="$3"
 
 # get home dir of both hosts, and test root pwd-less ssh by the way
 
-home_src=`ssh ${host_src} "su hdfs -c 'cd && pwd'"`
+home_src=`ssh ${host_src} "su $user -c 'cd && pwd'"`
+#home_src=`ssh ${host_src} "grep $user /etc/passwd | cut -d':' -f6"`
 if [ $? -ne 0 ] || [ -z "$home_src" ]; then
-    echo "ERROR: get home dir of $user at ${host_src} failed"
+    LOG ERROR "get home dir of $user at ${host_src} failed"
     exit 1
 fi
-home_dst=`ssh ${host_dst} "su hdfs -c 'cd && pwd'"`
+home_dst=`ssh ${host_dst} "su $user -c 'cd && pwd'"`
+#home_dst=`ssh ${host_dst} "grep $user /etc/passwd | cut -d':' -f6"`
 if [ $? -ne 0 ] || [ -z "$home_dst" ]; then
-    echo "ERROR: get home dir of $user at ${host_dst} failed"
+    LOG ERROR "get home dir of $user at ${host_dst} failed"
     exit 1
 fi
 
@@ -33,11 +37,14 @@ fi
 # 
 type='rsa'
 
+# init dst dir .ssh
+ssh ${host_dst} "su -c 'if [ ! -d $home_dst/.ssh ]; then mkdir $home_dst/.ssh; fi; touch $home_dst/.ssh/authorized_keys;' $user"
 
 # source : gen public key
+# 没有pty，不能用sudo
 ssh ${host_src} "
     if [ ! -f ${home_src}/.ssh/id_$type.pub ]; then
-        sudo -u $user ssh-keygen -t $type -P '' -f ${home_src}/.ssh/id_$type
+        su -c \"ssh-keygen -t $type -P '' -f ${home_src}/.ssh/id_$type\" $user
     fi
 "
 
@@ -53,9 +60,6 @@ scp ${host_src}:${home_src}/.ssh/id_$type.pub ./ > /dev/null 2>&1
 # B
 #
 
-# init dst dir .ssh
-ssh ${host_dst} "su $user -c 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; touch ~/.ssh/authorized_keys'"
-
 # cp to B
 scp ./id_$type.pub ${host_dst}:${home_dst}/ > /dev/null 2>&1
 rm ./id_$type.pub
@@ -65,11 +69,12 @@ ssh ${host_dst} "cd ${home_dst}; cat id_$type.pub >> .ssh/authorized_keys; rm id
 
 
 # test
-ssh -o StrictHostKeyChecking=no ${host_src} "su hdfs -c 'ssh -o StrictHostKeyChecking=no ${host_dst} pwd'" > /dev/null 2>&1
+ssh -o StrictHostKeyChecking=no ${host_src} "su $user -c 'ssh -o StrictHostKeyChecking=no ${host_dst} pwd'" > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo "set pwd-less ssh from $host_src to $host_dst SUCCEED"
 else
-    echo "set pwd-less ssh from $host_src to $host_dst FAIL"
+    LOG ERROR "set pwd-less ssh from $host_src to $host_dst FAIL"
+    exit 1;
 fi
 
 

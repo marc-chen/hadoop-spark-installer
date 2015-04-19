@@ -264,6 +264,7 @@ def ntpdate():
 
 
 # append hosts info to /etc/hosts
+# 按host删除比较好，会有一个ip多个host的情况
 def append_to_etc_hosts(hosts_file):
     put(hosts_file, '/tmp')
     with cd( '/tmp/' ):
@@ -271,7 +272,7 @@ def append_to_etc_hosts(hosts_file):
         file=`basename %s`
         grep -P '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)' $file \
         | awk 'NF==2{print $0}' | while read ip host; do
-            sed -i "/^$ip[ \t]/d" /etc/hosts
+            sed -i "/[ \t]\+$host[ \t]*$/d" /etc/hosts
             echo "$ip $host" >> /etc/hosts
         done
         rm $file
