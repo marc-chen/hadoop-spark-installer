@@ -164,6 +164,7 @@ def install_jdk_rpm(rpmpath, ver):
 
 
 
+# TODO: set installing path
 def install_jdk_tar(tarpath, ver):
     #pkg="/tmp/jdk-7u65-linux-x64.tar.gz"
     with cd( '/tmp/' ):
