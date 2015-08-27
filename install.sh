@@ -36,6 +36,8 @@ fi
 #fi
 
 
+# TODO:
+# 1. 不要 hostname, 直接 IP
 
 # set base env for scripts following
 . ./bin/set_env.sh
